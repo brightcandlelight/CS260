@@ -1,0 +1,47 @@
+nav li {
+    float: left;
+}
+
+section {
+ display: flex;
+}
+
+aside {
+ flex: 1
+}
+
+article {
+ flex: 4
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 5;
+	padding: 35;
+} 
+
+nav li a {
+    disp
+    lay: block;
+    background-color: #555;
+	list-style-type: none;
+	padding-right: 2cm;
+}
+
+
+nav li {
+    text-align: center;
+    border-bottom: 1px solid #555;
+	display: inline;
+}
+
+.active {
+    border-bottom: none;
+	background-color: pink !important; 
+    color: white !important;
+}
+
+nav li a:hover {
+    background-color: #4CAF50;
+	color: white;
+}
