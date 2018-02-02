@@ -1,0 +1,164 @@
+nav li {
+    float: left;
+}
+
+section {
+ display: flex;
+}
+
+aside {
+ flex: 1
+}
+
+article {
+ flex: 4
+}
+
+nav ul {
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #444;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    margin-bottom: 3px;
+} 
+
+nav li a {
+    display: block;
+    float: middle;
+    background-color: blue;
+	list-style-type: none;
+	color: white !important;
+	width: 60px;
+	text-align: center;
+	padding: 14px 16px;
+}
+
+
+nav li {
+    text-align: center;
+    border-bottom: 1px solid #555;
+	display: inline;
+}
+
+.active {
+    border-bottom: none;
+	background-color: pink; 
+    color: white !important;
+}
+
+nav li a:hover {
+    background-color: #4CAF50 !important;
+	color: white !important;
+}
+
+.wrapper {
+  display: grid;
+}
+
+
+.c11 {
+  grid-column: 1;
+  grid-row: 1;
+  border-top: 3px solid blue;
+  border-bottom: 3px solid blue;
+}
+.c12 { 
+  grid-column: 1;
+  grid-row: 3;
+  border-bottom: 3px solid blue;
+}
+.c13 {
+  grid-column: 1;
+  grid-row: 5;
+  border-bottom: 3px solid blue;
+}
+.c21 {
+	border-top: 3px solid blue;
+  grid-column: 2;
+  grid-row: 1;
+  border-bottom: 3px solid blue;
+   padding-top: 50px;
+}
+.c22 {
+  grid-column: 2;
+  grid-row: 3;
+  border-bottom: 3px solid blue;
+   padding-top: 50px;
+}
+.c23 {
+  grid-column: 2;
+  grid-row: 5;
+  border-bottom: 3px solid blue;
+  padding-top: 50px;
+}
+.c33 {
+  grid-column: 15;
+  grid-row: 5;
+
+}
+
+.bb {
+	border: 2px dashed blue;
+	margin-top: 10px;
+	width: 30%;
+}
+
+.article {
+    display: grid;
+    width: 60%;
+    grid-template-areas: "profile services" "pricing pricing";
+    grid-template-columns: 1fr 5fr;
+    grid-gap: 10px;
+    align-items: center;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+.profile {
+    grid-area: profile;
+    max-width: 600px;
+}
+
+.about {
+    grid-area: services;
+    max-width: 400px;
+}
+
+input[type=text], input[type=email] {
+    padding: 5px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: gray;
+	margin-top: 10px;
+}
+
+input[type=submit] {
+    grid-area: submit;
+    border-radius: 5px;
+    border-style: none;
+    min-height: 30px;
+    min-width: 50px;
+    margin-right: 5%;
+	margin-top: 10px;
+}
+
+footer {
+    background: #444;
+    text-align: center;
+    margin-top: 3%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    bottom: 0px;
+    width: 100%;
+	color: white !important;
+}
+
+footer a {
+	color: white !important;
+}
