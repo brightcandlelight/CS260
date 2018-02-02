@@ -60,36 +60,36 @@ nav li a:hover {
 
 
 .c11 {
-  grid-column: 1;
+  grid-column: 7;
   grid-row: 1;
   border-top: 3px solid blue;
   border-bottom: 3px solid blue;
 }
 .c12 { 
-  grid-column: 1;
+  grid-column: 7;
   grid-row: 3;
   border-bottom: 3px solid blue;
 }
 .c13 {
-  grid-column: 1;
+  grid-column: 7;
   grid-row: 5;
   border-bottom: 3px solid blue;
 }
 .c21 {
 	border-top: 3px solid blue;
-  grid-column: 2;
+  grid-column: 8;
   grid-row: 1;
   border-bottom: 3px solid blue;
    padding-top: 50px;
 }
 .c22 {
-  grid-column: 2;
+  grid-column: 8;
   grid-row: 3;
   border-bottom: 3px solid blue;
    padding-top: 50px;
 }
 .c23 {
-  grid-column: 2;
+  grid-column: 8;
   grid-row: 5;
   border-bottom: 3px solid blue;
   padding-top: 50px;
@@ -103,7 +103,7 @@ nav li a:hover {
 .bb {
 	border: 2px dashed blue;
 	margin-top: 10px;
-	width: 30%;
+	text-align: center;
 }
 
 .article {
@@ -163,4 +163,16 @@ footer {
 
 footer a {
 	color: white !important;
+}
+
+.center {
+	text-align: center;
+}
+
+h2 {
+	text-align: center !important;
+}
+
+h1 {
+	text-align: center !important;
 }
