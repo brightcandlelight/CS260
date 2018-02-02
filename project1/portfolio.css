@@ -20,9 +20,8 @@ nav ul {
     padding: 0;
     overflow: hidden;
     background-color: #444;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
     margin-bottom: 3px;
+	text-decoration: none;
 } 
 
 nav li a {
@@ -34,13 +33,14 @@ nav li a {
 	width: 60px;
 	text-align: center;
 	padding: 14px 16px;
+	text-decoration: none;
 }
 
 
 nav li {
     text-align: center;
-    border-bottom: 1px solid #555;
-	display: inline;
+    display: inline;
+	text-decoration: none;
 }
 
 .active {
@@ -153,10 +153,12 @@ footer {
     border-top-right-radius: 5px;
     display: flex;
     justify-content: center;
-    position: relative;
+    position: absolute;
     bottom: 0px;
     width: 100%;
 	color: white !important;
+	height:60px
+	grid-area: footer;
 }
 
 footer a {
