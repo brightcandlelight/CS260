@@ -67,6 +67,9 @@ $(document).ready(function() {
 				console.log("JSON: "+results);
 				
 				$("#stackResults").html(results);
+			},
+			error : function(request, status, error) {
+				$("#stackResults").html("<hr><h2 class=\"center\">0 Search Results</h2>");
 			}
 		});
     });
