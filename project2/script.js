@@ -21,13 +21,13 @@ function run() {
                         
                         results += '<th>'+ json.meals[i].strMeal + '</th>';
                         
-                        if (json.meals[i].strSource !== "") {
+                        if (json.meals[i].strSource !== "" && json.meals[i].strSource !== "none") {
                             results += '<th><a href="' +json.meals[i].strSource+'">'+'url'+'</a></th>';
                         } else {
                             results += '<th></th>'
                         }
                         
-                        if (json.meals[i].strYoutube !== "") {
+                        if (json.meals[i].strYoutube !== "" && json.meals[i].strYoutube !== "none") {
                             results += '<th><a href="' +json.meals[i].strYoutube+'">'+'youtube'+'</a></th>';
                         } else {
                             results += '<th></th>'
