@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="styles.css">
+<title>XKCD Broswer</title>
+</head>
+<body>
+<div id="container">
+
+<div id="header">
+<nav>
+	<ul>
+	</ul>
+</nav>
+</div>
+
+<div id="body">
+<div id="container2">
+<br>
+<h1>XKCD Broswer</h1>
+
+<div id="app">
+    <p>
+        <button v-on:click="previousComic">Previous</button>
+        <button v-on:click="nextComic">Next</button>
+        <button v-on:click="firstComic">First</button>
+        <button v-on:click="lastComic">Last</button>
+    </p>
+    <p>
+        <button v-on:click="randomComic">Random</button>
+    </p>
+
+    <div v-if="loading">
+        <p>Loading...</p>
+    </div>
+    <div v-else>
+        <h2>{{ current.safe_title}}</h2>
+        <img v-bind:src="current.img" v-bind:alt="current.alt">
+        <p><i># {{number}}, drawn on {{current.day}} {{month}} {{current.year}}</i></p>
+        <star-rating active-color="#FF0000"  v-bind:increment="0.5" v-model="rating"></star-rating>
+        <p>Average Rating: {{ratingNum}}</p>
+    </div>
+    <h3>Add a Comment</h3>
+    <form v-on:submit.prevent="addComment">
+      <input v-model="addedName" placeholder="Name"></p>
+      <textarea v-model="addedComment"></textarea>
+      <star-rating active-color="#FF0000"  v-bind:increment="0.5" v-model="addedRating"></star-rating>
+      <br/>
+      <button type="submit">Comment</button>
+    </form>
+    <h3>Commments</h3>
+    <div v-for="comment in comments[number]">
+      <hr>
+      <p>{{comment.text}}</p>
+      <p><i>-- {{comment.author}}</i></p>
+      
+    </div>
+</div>
+</div>
+</div>
+
+<div id="footer">
+<br>
+<a href="https://github.com/BYU-CS260-Winter-2018/lab-3-brightcandlelight">Lab 3 Github</a>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script> 
+<script src="https://unpkg.com/vue-star-rating/dist/star-rating.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/script.js"></script>
+
+</body>
+</html>
