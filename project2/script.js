@@ -5,11 +5,7 @@ function run() {
         //console.log(url);
         $.ajax({
             url : url,
-            beforeSend: function(request) {
-              request.setRequestHeader("Access-Control-Allow-Origin", "*");
-              request.setRequestHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
-            },
-            dataType : "json",
+            dataType : "jsonp",
             success : function(json) {
                 var json1 = JSON.stringify(json);
                 var length = json.meals ? json.meals.length : 0;
