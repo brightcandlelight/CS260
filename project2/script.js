@@ -5,6 +5,7 @@ function run() {
         //console.log(url);
         $.ajax({
             url : url,
+            //headers: {"Access-Control-Allow-Origin": "http://159.89.43.108"},
             dataType : "json",
             success : function(json) {
                 var json1 = JSON.stringify(json);
@@ -17,7 +18,7 @@ function run() {
                 if (length > 0) {
                     results += "<table class=\"table1\"><tr><td>Picture</td><td>Title</td><td>Recipe URL</td><td>Youtube Link</td></tr>";
                     for (var i=0; i<json.meals.length; i++) {
-                        results += '<tr><th id="table2"><img class="small" src="https://process.filestackapi.com/AhTgLagciQByzXpFGRI0Az/resize=width:200/http://' + json.meals[i].strMealThumb + '"/>';
+                        results += '<tr><th id="table2"><img class="small" src="https://process.filestackapi.com/AhTgLagciQByzXpFGRI0Az/resize=width:200/https://' + json.meals[i].strMealThumb + '"/>';
                         
                         results += '<th>'+ json.meals[i].strMeal + '</th>';
                         
