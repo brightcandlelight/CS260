@@ -5,6 +5,10 @@ function run() {
         //console.log(url);
         $.ajax({
             url : url,
+            beforeSend: function(request) {
+              request.setRequestHeader("Access-Control-Allow-Origin", "*");
+              request.setRequestHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
+            },
             dataType : "json",
             success : function(json) {
                 var json1 = JSON.stringify(json);
