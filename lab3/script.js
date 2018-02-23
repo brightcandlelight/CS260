@@ -77,6 +77,7 @@ var app = new Vue({
           } else {
             this.xkcd();
             this.ratingNum = average(this.ratings, this.number);
+            this.addedRating = '5';
           }
         }
     },
