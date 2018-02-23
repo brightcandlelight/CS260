@@ -35,16 +35,15 @@
     </div>
     <div v-else>
         <h2>{{ current.safe_title}}</h2>
-        <img v-bind:src="current.img" v-bind:alt="current.alt">
+        <img class="resize" v-bind:src="current.img" v-bind:alt="current.alt">
         <p><i># {{number}}, drawn on {{current.day}} {{month}} {{current.year}}</i></p>
-        <star-rating active-color="#FF0000"  v-bind:increment="0.5" v-model="rating"></star-rating>
+        <star-rating active-color="#FF0000"  v-bind:increment="0.5" v-model="addedRating" @rating-selected="rate"></star-rating>
         <p>Average Rating: {{ratingNum}}</p>
     </div>
     <h3>Add a Comment</h3>
     <form v-on:submit.prevent="addComment">
       <input v-model="addedName" placeholder="Name"></p>
       <textarea v-model="addedComment"></textarea>
-      <star-rating active-color="#FF0000"  v-bind:increment="0.5" v-model="addedRating"></star-rating>
       <br/>
       <button type="submit">Comment</button>
     </form>
@@ -52,7 +51,7 @@
     <div v-for="comment in comments[number]">
       <hr>
       <p>{{comment.text}}</p>
-      <p><i>-- {{comment.author}}</i></p>
+      <p><i>-- {{comment.author}}    {{comment.date}}</i></p>
       
     </div>
 </div>

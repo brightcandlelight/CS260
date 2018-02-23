@@ -174,19 +174,19 @@ html, body {
    padding:10px;
    padding-bottom:60px;   /* Height of the footer */
    background-color: white;
-   padding-left:45px;
-   padding-right:45px;
+   padding-left:15px;
+   padding-right:15px;
 }
 
 #container2 {
    padding-top: 15px;
-   padding-left:45px;
-   padding-right:45px;
+   padding-left:15px;
+   padding-right:15px;
    padding-bottom:30px;
    background-color: #eee;
    border-radius: 6px;
    margin: auto;
-   max-width: 400px;
+   max-width: 800px;
 }
 
 #footer {
@@ -232,7 +232,6 @@ footer {
 .small {
 	max-width: 50px;
 }
-
-h2 {
-	text-align: center !important;
+.resize {
+    max-width: 100%;
 }

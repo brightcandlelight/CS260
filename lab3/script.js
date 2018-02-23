@@ -1,3 +1,56 @@
+function timeStamp() {
+// Create a date object with the current time
+  var now = new Date();
+
+// Create an array with the current month, day and time
+  var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
+
+// Create an array with the current hour, minute and second
+  var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+
+// Determine AM or PM suffix based on the hour
+  var suffix = ( time[0] < 12 ) ? "AM" : "PM";
+
+// Convert hour from military time
+  time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
+
+// If hour is 0, set it to 12
+  time[0] = time[0] || 12;
+
+// If seconds and minutes are less than 10, add a zero
+  for ( var i = 1; i < 3; i++ ) {
+    if ( time[i] < 10 ) {
+      time[i] = "0" + time[i];
+    }
+  }
+
+// Return the formatted string
+  return date.join("/") + " " + time.join(":") + " " + suffix;
+}
+
+function average(comments, number) {
+    var total = 0;
+    var num = 0;
+    for (var key in comments) {
+        if (comments.hasOwnProperty(key)) {
+            if (key == number) {
+                console.log(key + " -> " + comments[key]);
+                var j = comments[key];
+                for (var key1 =0; key1 < j.length;key1++) {
+                    num++;
+                    total += j[key1].rating;
+                }
+            }
+        }
+    }
+   
+    if (num === 0) {
+        return 5;
+    }
+    total /= num;
+    return total;
+}
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -8,10 +61,10 @@ var app = new Vue({
         loading: true,
         addedName: '',
         addedComment: '',
-        addedRating: '',
-        rating: '',
-        ratingNum: '',
-        comments: {}
+        addedRating: '5',
+        ratingNum: '5',
+        comments: {},
+        ratings: {}
     },
     created: function() {
         Vue.component('star-rating', VueStarRating.default);
@@ -23,6 +76,7 @@ var app = new Vue({
             this.max = value;
           } else {
             this.xkcd();
+            this.ratingNum = average(this.ratings, this.number);
           }
         }
     },
@@ -83,10 +137,16 @@ var app = new Vue({
         addComment: function() {
           if (!(this.number in this.comments))
             Vue.set(app.comments, this.number, new Array);
-          this.comments[this.number].push({author:this.addedName,text:this.addedComment, rating:this.addedRating});
+          var v = timeStamp();
+          this.comments[this.number].push({author:this.addedName,text:this.addedComment, date:v});
           this.addedName = '';
           this.addedComment = '';
-          this.addedRating = '';
+        },
+        rate: function() {
+            if (!(this.number in this.ratings))
+                Vue.set(app.ratings, this.number, new Array);
+            this.ratings[this.number].push({rating: this.addedRating});
+            this.ratingNum = average(this.ratings, this.number);
         }
     }
 });
