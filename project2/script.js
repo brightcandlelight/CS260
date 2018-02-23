@@ -1,11 +1,11 @@
 function run() {
     var search_text = $("#recipeText").val();
     if (search_text !== "") {
-        var url = "http://www.themealdb.com/api/json/v1/1/search.php?s="+search_text;
+        var url = "https://www.themealdb.com/api/json/v1/1/search.php?s="+search_text;
         //console.log(url);
         $.ajax({
             url : url,
-            dataType : "jsonp",
+            dataType : "json",
             success : function(json) {
                 var json1 = JSON.stringify(json);
                 var length = json.meals ? json.meals.length : 0;
