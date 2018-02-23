@@ -34,7 +34,7 @@ function average(comments, number) {
     for (var key in comments) {
         if (comments.hasOwnProperty(key)) {
             if (key == number) {
-                console.log(key + " -> " + comments[key]);
+                //console.log(key + " -> " + comments[key]);
                 var j = comments[key];
                 for (var key1 =0; key1 < j.length;key1++) {
                     num++;
