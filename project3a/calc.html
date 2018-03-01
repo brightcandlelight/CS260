@@ -1,0 +1,50 @@
+<html>
+<head>
+<link rel="stylesheet" href="styles.css">
+<title>Basic Math Solver</title>
+</head>
+<body>
+
+
+
+<div id="container">
+
+<div id="header">
+
+</div>
+
+<div id="body">
+<div id="container2">
+<div id="app">
+<h2>Math Solver</h2>
+<p>Enter a math expression in the box below.</P>
+<p>We will make an API call and output the results to you!</p> 
+<form v-on:submit.prevent="calc" class="center">
+  <input type="text" id="text">
+  <br>
+  <button type="submit" id="Submit">Solve</button>
+</form>
+<button v-on:click="deleteAll()" id="Submit">Delete All</button>
+<center>
+
+
+<div v-for="comment in comments">
+      <hr>
+      <p>{{comment.text}}</p>
+      
+    </div>
+</center>
+</div>
+</div>
+</div>
+
+<div id="footer">
+<br>
+<a href="https://github.com/brightcandlelight/CS260/tree/master/project3a">Project 3 Github</a>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script text="type/javascript" src="script.js"></script>
+</body>
+</html>
