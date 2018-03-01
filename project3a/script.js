@@ -15,6 +15,7 @@ var app = new Vue({
         calc: function() {
             var self = this;
             var me = $("#text").val();
+            
             $.ajax({
                 url: 'http://api.mathjs.org/v4/?expr='+encodeURIComponent(me)+'&precision=3',
                 method: 'GET',
@@ -22,12 +23,13 @@ var app = new Vue({
                     //if (!(this.number in this.comments))
                     // Vue.set(app.comments, this.number, new Array);
                     self.comments.unshift({text: me+" = "+data});
+                    document.getElementById("text").value = "";
                 },
                 error: function (error) {
+                    self.comments.unshift({text: me+" = "+"ERROR"});
                     console.log(error);
                 }
             });
-            //$("#text").value = "";
             //if (!(this.number in this.comments))
              // Vue.set(app.comments, this.number, new Array);
             //this.comments[this.number].push({text: "hi"});
