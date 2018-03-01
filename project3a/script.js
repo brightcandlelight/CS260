@@ -3,7 +3,8 @@ var app = new Vue({
     data: {
         items:"",
         comments: [],
-        number: ''
+        number: '',
+        myText: ''
     },
     created: function() {
 
@@ -26,6 +27,7 @@ var app = new Vue({
                     console.log(error);
                 }
             });
+            //$("#text").value = "";
             //if (!(this.number in this.comments))
              // Vue.set(app.comments, this.number, new Array);
             //this.comments[this.number].push({text: "hi"});
