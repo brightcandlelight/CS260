@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css"/>
+    <title>Vue Todo</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>A List of Things To Do</h1>
+      <p v-show="activeItems.length === 0">You are done with all your tasks! Good job!</p>
+      <table class="border"><tr><td></td>
+      <td>
+      New Task
+      <form v-on:submit.prevent="addItem" >
+    
+      
+	<input type="text" v-model="text"></input><br>
+    Priority
+          <input type="radio" name="picked" value="1" v-model="picked">1</input>
+          <input type="radio" name="picked" value="2" v-model="picked">2</input>
+          <input type="radio" name="picked" value="3" v-model="picked">3</input>
+      <br>
+    <button type="submit">Add</button>
+      </form>
+      </td></tr></table>
+      <div class="controls">
+	<button v-on:click="showAll()">Show All</button>
+	<button v-on:click="showActive()">Show Active</button>
+	<button v-on:click="showCompleted()">Show Completed</button>
+	<button v-on:click="deleteCompleted()">Delete Completed</button>
+    <button v-on:click="sortFunc()">Sort by priority</button>
+      </div>
+      <ul>
+	<li v-for="item in filteredItems" draggable="true" v-on:dragstart="dragItem(item)" v-on:dragover.prevent v-on:drop="dropItem(item)">
+    <table><tr><td>
+      <form action="" v-bind:class="{ completed: item.completed }">Priority
+          <input type="radio" name="picked" value="1" v-model="item.picked">1</input>
+          <input type="radio" name="picked" value="2" v-model="item.picked">2</input>
+          <input type="radio" name="picked" value="3" v-model="item.picked">3</input>
+      </form></td><td class="margin">
+	  <input type="checkbox" v-model="item.completed" v-on:click="completeItem(item)" /><label v-bind:class="{ completed: item.completed }">{{ item.text }}</label></td></tr></table><button v-on:click="deleteItem(item)" class="delete">X</button>
+	</li>
+      </ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" integrity="sha256-mpnrJ5DpEZZkwkE1ZgkEQQJW/46CSEh/STrZKOB/qoM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js" integrity="sha256-pU9euBaEcVl8Gtg+FRYCtin2vKLN8sx5/4npZDmY2VA=" crossorigin="anonymous"></script>
+    <script src="/script.js"></script>
+  </body>
+</html>
