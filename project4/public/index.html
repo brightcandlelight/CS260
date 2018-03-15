@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css"/>
+    <title>Notes List</title>
+  </head>
+  <body>
+    <div id="container">
+
+    <div id="header">
+    <nav>
+        <ul>
+        </ul>
+    </nav>
+    </div>
+
+    <div id="body">
+    <div id="container2">
+    <div id="app">
+      <h1>Notes</h1>
+      <table class="border"><tr><td></td>
+      <td>
+      New Note<br>
+      <form v-on:submit.prevent="addItem" >
+    
+      
+	<p class="controls1">Author: <input type="text" v-model="author"></input></p><p class="controls1">Subject: <input type="text" v-model="subject"></input></p>
+    <button type="submit">Add</button>
+      </form>
+      </td></tr></table>
+      <ul>
+      <li>
+      <table><tr><td class="wide1 center"><b>Edit</b></td><td class="wide center"><b>Author</b></td><td class="margin center wide3"><b>Subject</b></td><td class="wide2"><b>Modified</b></td><td class="wide2"><b>Created</b></td></tr></table></li><br>
+	<li v-for="item in filteredItems" draggable="true" v-on:dragstart="dragItem(item)" v-on:dragover.prevent v-on:drop="dropItem(item)">
+    <table><tr><td><button v-on:click="openItem(item)" >Edit</button>
+      </td><td class="wide">{{ item.author }} </td><td class="margin wide3">
+	  {{ item.subject }}</td><td class="wide2">{{item.modified}}</td><td class="wide2">{{item.created}}</td></tr></table><button v-on:click="deleteItem(item)" class="delete">X</button>
+	</li>
+      </ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" integrity="sha256-mpnrJ5DpEZZkwkE1ZgkEQQJW/46CSEh/STrZKOB/qoM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js" integrity="sha256-pU9euBaEcVl8Gtg+FRYCtin2vKLN8sx5/4npZDmY2VA=" crossorigin="anonymous"></script>
+    <script src="/script.js"></script>
+    </div>
+    </div>
+
+    <div id="footer">
+        <br>
+        <a href="https://github.com/brightcandlelight/CS260/tree/master/project4">Creative Project 4 Github</a>
+    </div>
+    </div>
+  </body>
+</html>

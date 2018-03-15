@@ -1,0 +1,173 @@
+body {
+    font-family: 'Arvo';
+    font-size: 16px;
+    padding: 20px 100px 0px 100px;
+    background: #f3f3f3;
+}
+
+/* List */
+
+ul {
+    list-style: none;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    width: 800px;
+    min-height: 30px;
+    font-size: 1em;
+    background: #fff;
+    
+}
+
+.wide {
+    min-width: 100px;
+}
+
+.wide1 {
+    min-width: 48px;
+}
+
+.wide2 {
+    width: 100px;
+    max-width: 100px;
+}
+
+.wide3 {
+    width: 350px;
+}
+
+.center {
+    text-align: center;
+    align-items: center;
+
+}
+
+li td {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 6px solid #f3f3f3;
+}
+
+.delete {
+    display: none;
+    margin-left: auto;
+    padding-top: 10px;
+    padding-bottom:10px;
+}
+
+li .delete {
+    display: block;
+    margin-left: 5px;
+}
+
+label {
+    width: 400px;
+}
+
+.completed {
+    text-decoration: line-through;
+}
+
+/* Form */
+
+input[type=checkbox] {
+    transform: scale(1.5);
+    margin-right: 10px;
+}
+
+input[type=text] {
+    font-size: 1em;
+}
+
+button {
+    font-family: 'Arvo';
+    font-size: 1em;
+}
+
+/* Controls */
+
+.controls {
+    margin-top: 20px;
+}
+
+.controls1 {
+    margin-top: 10px;
+}
+
+.margin {
+    padding-left: 20px;
+}
+
+.big {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.border {
+    border-style:dashed;
+}
+
+#footer a {
+	padding-top: 10px;
+	color: white !important;
+	text-decoration: none;
+}
+html, body {
+   margin:0;
+   padding:0;
+   height:100%;
+}
+
+#container {
+   min-height:100%;
+   position:relative;
+}
+
+#header {
+   padding:10px;
+}
+
+#body {
+   padding:10px;
+   padding-bottom:60px;   /* Height of the footer */
+   padding-left:15px;
+   padding-right:15px;
+}
+
+#container2 {
+   padding-top: 15px;
+   padding-left:15px;
+   padding-right:15px;
+   padding-bottom:30px;
+   border-radius: 6px;
+   margin: auto;
+   max-width: 700px;
+}
+
+#footer {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:60px;   /* Height of the footer */
+   background: #444;
+   text-align: center;
+   color: white !important;
+   text-decoration: none;
+}
+
+footer {
+	position:absolute
+	
+    background: #444;
+    text-align: center;
+    margin-top: 3%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    justify-content: center;
+    bottom: 0px;
+    width: 100%;
+	height:260px;
+	grid-area: footer;
+}

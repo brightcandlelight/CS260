@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css"/>
+    <title>Note Item</title>
+  </head>
+  <body>
+    <div id="container">
+
+    <div id="header">
+    <nav>
+        <ul>
+        </ul>
+    </nav>
+    </div>
+
+    <div id="body">
+    <div id="container2">
+    <div id="app1">
+
+  
+      <h2>Subject:<input class="big" v-model="item.subject"/></h2>
+      <p>Created: {{ item.created}} </p>
+      <p>Modified: {{ item.modified}} </p>
+      <p>Author:<input v-model="item.author"/></p>
+      
+      <textarea rows="20" cols="50" v-model="item.text"></textarea><br>
+      
+      <button v-on:click="editItem()" >Save</button>
+      <button v-on:click="returnList()" >Return to list</button>
+      
+    </div>
+    
+    </div>
+    </div>
+    
+
+    <div id="footer">
+        <br>
+        <a href="https://github.com/brightcandlelight/CS260/tree/master/project4">Creative Project 4 Github</a>
+    </div>
+    </div>
+  </body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js" integrity="sha256-mpnrJ5DpEZZkwkE1ZgkEQQJW/46CSEh/STrZKOB/qoM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js" integrity="sha256-pU9euBaEcVl8Gtg+FRYCtin2vKLN8sx5/4npZDmY2VA=" crossorigin="anonymous"></script>
+    <script src="/script1.js"></script>
