@@ -7,6 +7,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static('public'))
 
+function getTime() {
+  let currentdate = new Date();
+  let datetime1 = (currentdate.getMonth()+1) + "/"
+                + (currentdate.getDate())  + "/"
+                + currentdate.getFullYear() + " ";
+  let time = ("0" + currentdate.getHours()).slice(-2)   + ":" + 
+    ("0" + currentdate.getMinutes()).slice(-2) + ":" + 
+    ("0" + currentdate.getSeconds()).slice(-2);
+  return datetime1 + time;
+}
+
 let items = [];
 let id = 0;
 let sortDes = true;
@@ -25,26 +36,14 @@ app.get('/api/items/:id', (req, res) => {
 
 app.post('/api/items', (req, res) => {
   id = id + 1;
-  var currentdate = new Date(); 
-  let datetime1 = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
+  let datetime1 = getTime();
   let item = {id:id, subject: req.body.subject, text:req.body.text, author: req.body.author, created: datetime1, modified: datetime1};
   items.push(item);
   res.send(item);
 });
 
 app.put('/api/items/:id', (req, res) => {
-  var currentdate = new Date(); 
-  let datetime1 = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
+  let datetime1 = getTime();
     
   let id = parseInt(req.params.id);
   let itemsMap = items.map(item => { return item.id; });
@@ -79,4 +78,4 @@ app.delete('/api/items/:id', (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(3000, () => console.log('Server listening on port 3000!'))
+app.listen(3001, () => console.log('Server listening on port 3001!'))
