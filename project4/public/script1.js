@@ -1,14 +1,4 @@
 
-function getTime() {
-  let currentdate = new Date();
-  let datetime1 = (currentdate.getMonth()+1) + "/"
-                + (currentdate.getDate())  + "/"
-                + currentdate.getFullYear() + " ";
-  let time = ("0" + currentdate.getHours()).slice(-2)   + ":" +
-    ("0" + currentdate.getMinutes()).slice(-2) + ":" +
-    ("0" + currentdate.getSeconds()).slice(-2);
-  return datetime1 + time;
-}
 
 
 function getSearchParams(k){
@@ -49,7 +39,7 @@ var app1 = new Vue({
     author: this.item.author,
 	orderChange: false,
       }).then(response => {
-            this.item.modified = getTime();
+	    this.getItem();
 	return true;
       }).catch(err => {
       });
