@@ -7,6 +7,11 @@ body {
 
 /* List */
 
+h1 {
+font-family: "Courier New", Courier, monospace;
+font-style: italic;
+}
+
 ul {
     list-style: none;
 }
@@ -114,10 +119,16 @@ button {
 	color: white !important;
 	text-decoration: none;
 }
+
+.white {
+ background: white;
+}
+
 html, body {
    margin:0;
    padding:0;
    height:100%;
+   background:#A9A9A9;
 }
 
 #container {
@@ -134,6 +145,7 @@ html, body {
    padding-bottom:60px;   /* Height of the footer */
    padding-left:15px;
    padding-right:15px;
+   background: #A9A9A9;
 }
 
 #container2 {
