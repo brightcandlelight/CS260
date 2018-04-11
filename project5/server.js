@@ -42,6 +42,97 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// Channels //
+
+// Get all the entries for one of your channels
+app.get('/api/channels/:gid', (req, res) => {
+  let offset = 0;
+  if (req.query.offset)
+    offset = parseInt(req.query.offset);
+  let limit = 50;
+  if (req.query.limit)
+    limit = parseInt(req.query.limit);
+
+  let gid = parseInt(req.params.gid);
+  // get user record
+  knex('tweets').where('group_id',gid).
+    .orderBy('created', 'desc')
+    .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
+    res.status(200).json({tweets:tweets});
+  }).catch(error => {
+    res.status(500).json({ error });
+  });
+});*/
+
+/*app.get('/api/tweets/search', (req, res) => {
+  if (!req.query.keywords)
+    return res.status(400).send();
+  let offset = 0;
+  if (req.query.offset)
+    offset = parseInt(req.query.offset);
+  let limit = 50;
+  if (req.query.limit)
+    limit = parseInt(req.query.limit);
+  knex('users').join('tweets','users.id','tweets.user_id')
+    .whereRaw("MATCH (tweet) AGAINST('" + req.query.keywords + "')")
+    .orderBy('created','desc')
+    .limit(limit)
+    .offset(offset)
+    .select('tweet','username','name','created','users.id as userID').then(tweets => {
+      res.status(200).json({tweets:tweets});
+    }).catch(error => {
+      console.log(error);
+      res.status(500).json({ error });
+    });
+});*/
+
+// Get all the public channels
+app.get('/api/channels', (req, res) => {
+  let id = parseInt(req.params.id);
+  // get user record
+  knex('groups').where('public',1).where('direct',0).select('group_id','name','description','public', 'channel').then(groups => {
+    res.status(200).json({groups:groups});
+  }).catch(error => {
+    res.status(500).json({ error });
+  });
+});
+
+// Make that channel direct
+app.put('/api/channels/:gid', (req, res) => {
+  let gid = parseInt(req.params.gid);
+  knex('groups').where('group_id', gid).update({ 'channel', 0 }).then(() => {
+      res.status(204);
+  }).catch(error => {
+    if (error.message !== 'abort') {
+      console.log(error);
+      res.status(500).json({ error });
+    }
+  });
+}
+
+// Create a channel
+app.post('/api/channels', (req, res) => {
+  if (!req.body.name || !req.body.description || !req.body.public || !req.body.direct)
+    return res.status(400).send();
+  knex('groups').where('name', req.body.name).first().then(user => {
+    if (user !== undefined) {
+      res.status(403).send("Group already exists");
+      throw new Error('abort');
+    }
+  }).then(() => {
+    return knex('groups').insert({name: req.body.name, description:req.body.description,
+                                 public:req.body.public, direct: req.body.direct});
+  }).then(group => {
+    res.status(200).json({group:group});
+    return;
+  }).catch(error => {
+    if (error.message !== 'abort') {
+      console.log(error);
+      res.status(500).json({ error });
+    }
+  });
+});
+
 // Users //
 
 app.get('/api/users/:id', (req, res) => {
@@ -100,23 +191,42 @@ app.delete('/api/users/:id', (req, res) => {
 
 // User Tweets //
 
-app.get('/api/users/:id/tweets', (req, res) => {
+// Get the channels a user is subscribed to
+app.get('/api/channels/user/1/:id', (req, res) => {
   let id = parseInt(req.params.id);
-  knex('users').join('tweets','users.id','tweets.user_id')
-    .where('users.id',id)
-    .orderBy('created','desc')
-    .select('tweet','username','name','created').then(tweets => {
-      res.status(200).json({tweets:tweets});
+  knex('followers').join('groups','followers.follows','groups.group_id')
+    .where('followers.user_id',id)
+    .where('groups.channel', 1)
+    .orderBy('name','asc') //asc is default anyway but yeah
+    .select('group_id', 'name','description', 'public', 'channel').then(tweets => {
+      res.status(200).json({groups:tweets});
     }).catch(error => {
       console.log(error);
       res.status(500).json({ error });
     });
 });
 
-app.post('/api/users/:id/tweets', (req, res) => {
+// Get the direct message groups a user is subscribed to
+app.get('/api/channels/user/0/:id', (req, res) => {
   let id = parseInt(req.params.id);
+  knex('followers').join('groups','followers.follows','groups.group_id')
+    .where('followers.user_id',id)
+    .where('groups.channel', 0)
+    .orderBy('name','asc') //asc is default anyway but yeah
+    .select('group_id', 'name','description', 'public', 'channel').then(tweets => {
+      res.status(200).json({groups:tweets});
+    }).catch(error => {
+      console.log(error);
+      res.status(500).json({ error });
+    });
+});
+
+// Post to a group channel
+app.post('/api/channels/:id/:gid', (req, res) => {
+  let id = parseInt(req.params.id);
+  let gid = parseInt(req.params.gid);
   knex('users').where('id',id).first().then(user => {
-    return knex('tweets').insert({user_id: id, tweet:req.body.tweet, created: new Date()});
+    return knex('tweets').insert({user_id: id, tweet:req.body.tweet, created: new Date(),group_id: gid});
   }).then(ids => {
     return knex('tweets').where('id',ids[0]).first();
   }).then(tweet => {
@@ -145,7 +255,7 @@ app.delete('/api/users/:id/tweets/:tweetId', (req, res) => {
 
 // All Tweets //
 
-app.get('/api/tweets/search', (req, res) => {
+/*app.get('/api/tweets/search', (req, res) => {
   if (!req.query.keywords)
     return res.status(400).send();
   let offset = 0;
@@ -185,20 +295,25 @@ app.get('/api/tweets/hash/:hashtag', (req, res) => {
       console.log(error);
       res.status(500).json({ error });
     });
-});
+});*/
 
 // Followers //
 
-// follow someone
+// follow a group
 app.post('/api/users/:id/follow', (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
-  // id of the person who is being followed
+  // id of the group who is being followed
   let follows = req.body.id;
   // make sure both of these users exist
   knex('users').where('id',id).first().then(user => {
-    return knex('users').where('id',follows).first();
-  }).then(user => {
+    return knex('groups').where('group_id',follows).first();
+  }).then(group => {
+    // Make sure the group is a channel (open to join)
+    if (group.channel === 0) {
+         throw new Error("Channel not open to join.");
+    }
+
     // make sure entry doesn't already exist
     return knex('followers').where({user_id:id,follows_id:follows}).first();
   }).then(entry => {
@@ -216,7 +331,7 @@ app.post('/api/users/:id/follow', (req,res) => {
   });
 });
 
-// unfollow someone
+// unfollow a group
 app.delete('/api/users/:id/follow/:follower', (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
@@ -224,7 +339,7 @@ app.delete('/api/users/:id/follow/:follower', (req,res) => {
   let follows = parseInt(req.params.follower);
   // make sure both of these users exist
   knex('users').where('id',id).first().then(user => {
-    return knex('users').where('id',follows).first();
+    return knex('groups').where('group_id',follows).first();
   }).then(user => {
     // delete the entry in the followers table
     return knex('followers').where({'user_id':id,follows_id:follows}).first().del();
@@ -238,7 +353,7 @@ app.delete('/api/users/:id/follow/:follower', (req,res) => {
 });
 
 // get list of people you are following
-app.get('/api/users/:id/follow', (req,res) => {
+/*app.get('/api/users/:id/follow', (req,res) => {
   // id of the person we are interested in
   let id = parseInt(req.params.id);
   // get people this person is following
@@ -250,10 +365,10 @@ app.get('/api/users/:id/follow', (req,res) => {
       console.log(error);
       res.status(500).json({ error });
     });
-});
+});*/
 
 // get list of people who are following you
-app.get('/api/users/:id/followers', (req,res) => {
+/*app.get('/api/users/:id/followers', (req,res) => {
   // id of the person we are interested in
   let id = parseInt(req.params.id);
   // get people who are following of this person
@@ -265,12 +380,12 @@ app.get('/api/users/:id/followers', (req,res) => {
       console.log(error);
       res.status(500).json({ error });
     });
-});
+});*/
 
 // get the tweets of those you are following
 // use limit to limit the results to a certain number
 // use offset to provide an offset into the results (e.g., starting at results number 10)
-app.get('/api/users/:id/feed', (req,res) => {
+/*app.get('/api/users/:id/feed', (req,res) => {
   // id of the person we are interested in
   let id = parseInt(req.params.id);
   // offset into the results
@@ -298,7 +413,7 @@ app.get('/api/users/:id/feed', (req,res) => {
     console.log(error);
     res.status(500).json({ error });
   });
-});
+});*/
 
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));
