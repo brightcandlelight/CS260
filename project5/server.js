@@ -88,7 +88,7 @@ app.get('/api/channels/:gid', (req, res) => {
 
 // Get all the public channels
 app.get('/api/channels', (req, res) => {
-  let id = parseInt(req.params.id);
+  // let id = parseInt(req.params.id);
   // get user record
   knex('groups').where('public',1).where('direct',0).select('group_id','name','description','public', 'channel').then(groups => {
     res.status(200).json({groups:groups});
