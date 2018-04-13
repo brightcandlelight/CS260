@@ -61,8 +61,8 @@
          email: this.email,
          password: this.password,
        }).then(user => {
-	 this.email = '';
-	 this.password = '';
+         this.email = '';
+         this.password = '';
        });
      },
      logout: function() {

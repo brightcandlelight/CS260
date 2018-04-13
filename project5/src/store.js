@@ -2,6 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import axios from 'axios';
+import when from 'when';
+//const when = require('when');
+
 
 Vue.use(Vuex);
 
@@ -13,11 +16,12 @@ export default new Vuex.Store({
     registerError: '',
     feed: [],
     userView: [],
-    feedView: [],
-    following: [],
-    followers: [],
-    followingView: [],
-    followersView: [],
+    channel: [],
+    channelId: '',
+    myPublicChannels: [],
+    myDirectChannels: [],
+    personList: [],
+    allPeopleList: [],
   },
   getters: {
     user: state => state.user,
@@ -25,20 +29,13 @@ export default new Vuex.Store({
     loginError: state => state.loginError,
     registerError: state => state.registerError,
     feed: state => state.feed,
+    channel: state => state.channel,
     feedView: state => state.feedView,
     userView: state => state.userView,
-    following: state => state.following,
-    followers: state => state.followers,
-    isFollowing: state => (id) => {
-      return state.following.reduce((val,item) => {
-	if (item.id === id)
-	  return true;
-	else
-	  return val;
-      },false);
-    },
-    followingView: state => state.followingView,
-    followersView: state => state.followersView,
+    myPublicChannels: state => state.myPublicChannels,
+    myDirectChannels: state => state.myDirectChannels,
+    personList: state => state.personList,
+    allPeopleList: state => state.allPeopleList,
   },
   mutations: {
     setUser (state, user) {
@@ -56,67 +53,70 @@ export default new Vuex.Store({
     setFeed (state, feed) {
       state.feed = feed;
     },
+    setChannel (state, feed) {
+      state.channel = feed;
+    },
+    setChannelId (state, feed) {
+      state.channelId = feed;
+    },
     setUserView (state, user) {
       state.userView = user;
     },
-    setFeedView (state, feed) {
-      state.feedView = feed;
+    setPersonList (state, feed) {
+      state.personList = feed;
     },
-    setFollowing (state, following) {
-      state.following = following;
+    setMyPublicChannels (state, feed) {
+      state.myPublicChannels = feed;
     },
-    setFollowers (state, followers) {
-      state.followers = followers;
+    setMyDirectChannels (state, feed) {
+      state.myDirectChannels = feed;
     },
-    setFollowingView (state, following) {
-      state.followingView = following;
-    },
-    setFollowersView (state, followers) {
-      state.followersView = followers;
+    setAllPeopleList(state, feed) {
+      state.allPeopleList = feed;
     },
   },
   actions: {
     // Registration, Login //
     register(context,user) {
       return axios.post("/api/users",user).then(response => {
-	context.commit('setUser', response.data.user);
-	context.commit('setLogin',true);
-	context.commit('setRegisterError',"");
-	context.commit('setLoginError',"");
-	context.dispatch('getFollowing');
-	context.dispatch('getFollowers');
+        context.commit('setUser', response.data.user);
+        context.commit('setLogin',true);
+        context.commit('setRegisterError',"");
+        context.commit('setLoginError',"");
+        context.dispatch('getFollowing');
+        context.dispatch('getFollowers');
       }).catch(error => {
-	context.commit('setLogin',false);
-	context.commit('setLoginError',"");
-	if (error.response) {
-	  if (error.response.status === 403)
-	    context.commit('setRegisterError',"That email address already has an account.");
-	  else if (error.response.status === 409)
-	    context.commit('setRegisterError',"That user name is already taken.");
-	  return;
-	}
-	context.commit('setRegisterError',"Sorry, your request failed. We will look into it.");
+        context.commit('setLogin',false);
+        context.commit('setLoginError',"");
+        if (error.response) {
+          if (error.response.status === 403)
+            context.commit('setRegisterError',"That email address already has an account.");
+          else if (error.response.status === 409)
+            context.commit('setRegisterError',"That user name is already taken.");
+          return;
+        }
+        context.commit('setRegisterError',"Sorry, your request failed. We will look into it.");
       });
     },
     login(context,user) {
       return axios.post("/api/login",user).then(response => {
-	context.commit('setUser', response.data.user);
-	context.commit('setLogin',true);
-	context.commit('setRegisterError',"");
-	context.commit('setLoginError',"");
-	context.dispatch('getFollowing');
-	context.dispatch('getFollowers');
+        context.commit('setUser', response.data.user);
+        context.commit('setLogin',true);
+        context.commit('setRegisterError',"");
+        context.commit('setLoginError',"");
+        context.dispatch('getFollowing');
+        context.dispatch('getFollowers');
       }).catch(error => {
-	context.commit('setLogin',false);
-	context.commit('setRegisterError',"");
-	if (error.response) {
-	  if (error.response.status === 403 || error.response.status === 400)
-	    context.commit('setLoginError',"Invalid login.");
-	  context.commit('setRegisterError',"");
-	  return;
-	}
-	console.log(error);
-	context.commit('setLoginError',"Sorry, your request failed. We will look into it.");
+        context.commit('setLogin',false);
+        context.commit('setRegisterError',"");
+        if (error.response) {
+          if (error.response.status === 403 || error.response.status === 400)
+            context.commit('setLoginError',"Invalid login.");
+          context.commit('setRegisterError',"");
+          return;
+        }
+        console.log(error);
+        context.commit('setLoginError',"Sorry, your request failed. We will look into it.");
       });
     },
     logout(context,user) {
@@ -127,100 +127,127 @@ export default new Vuex.Store({
     // get a user, must supply {username: username} of user you want to get
     getUser(context,user) {
       return axios.get("/api/users/" + user.id).then(response => {
-	context.commit('setUserView',response.data.user);
+        context.commit('setUserView',response.data.user);
       }).catch(err => {
-	console.log("getUser failed:",err);
+        console.log("getUser failed:",err);
       });
     },
-    // get tweets of a user, must supply {id:id} of user you want to get tweets for
-    getUserTweets(context,user) {
-      return axios.get("/api/users/" + user.id + "/tweets").then(response => {
-	context.commit('setFeedView',response.data.tweets);
+    // Get channel messages 
+    getChannel(context,gid) {
+      return axios.get("/api/channels/" + gid + "/").then(response => {
+        context.commit('setChannel',response.data.tweets);
+        context.commit('setChannelId', gid);
       }).catch(err => {
-	console.log("getUserTweets failed:",err);
+        console.log("getChannel failed:",err);
       });
     },
-    // Tweeting //
-    addTweet(context,tweet) {
-      axios.post("/api/users/" + context.state.user.id + "/tweets",tweet).then(response => {
-	return context.dispatch('getFeed');
+    // Get channel info
+    getChannelInfo(context,gid) {
+      return axios.get("/api/channels/info/" + gid + "/").then(response => {
+        context.commit('setChannel',response.data.tweets);
+        context.commit('setChannelId', gid);
       }).catch(err => {
-	console.log("addTweet failed:",err);
+        console.log("getChannelInfo failed:",err);
       });
     },
-    // Searching //
+    clearChannel(context) {
+      context.commit('setChannel',{'groupname':'', 'description':'', people:[], direct:'', public:''});
+    },
+    
+    // Add to channel //
+    addChannelMsg(context,tweet) {
+      axios.post("/api/channels/" + context.state.user.id + "/"+context.state.channelId,tweet).then(response => {
+        return context.dispatch('getChannel', context.state.channelId);
+      }).catch(err => {
+        console.log("addChannel failed:",err);
+      });
+    },
+    // Search text in my channels //
     doSearch(context,keywords) {
-      return axios.get("/api/tweets/search?keywords=" + keywords).then(response => {
-	context.commit('setFeed',response.data.tweets);
+      return axios.get("/api/channels/searchText/" + keywords).then(response => {
+        context.commit('setChannel',response.data.tweets);
       }).catch(err => {
-	console.log("doSearch failed:",err);
+        console.log("doSearch failed:",err);
       });
     },
-    doHashTagSearch(context,hashtag) {
-      return axios.get("/api/tweets/hash/" + hashtag).then(response => {
-	context.commit('setFeed',response.data.tweets);
+    allPeopleSearch(context,keywords) {
+      return axios.get("/api/users/search/"+keywords).then(response => {
+        context.commit('setAllPeopleList',response.data.tweets);
       }).catch(err => {
-	console.log("doHashTagSearch failed:",err);
+        console.log("allPeopleSearch failed:",err);
       });
     },
+    personSearch(context,gid) {
+      return axios.get("/api/channels/"+gid+"/members/").then(response => {
+        context.commit('setPersonList',response.data.tweets);
+      }).catch(err => {
+        console.log("personSearch failed:",err);
+      });
+    },
+    // Get public channels
+    searchPublicChannelName(context,keywords) {
+      return axios.get("/api/channels/search/"+keywords).then(response => {
+        context.commit('setChannel',response.data.tweets);
+      }).catch(err => {
+        console.log("searchPublicChannelName failed:",err);
+      });
+    },
+    // Create channel //
+    createChannel(context,channel) {
+        return axios.post("/api/channels/", channel).then(response => {
+            // channel.people need not include yourself.
+            for (person in channel.people) {
+                // dispatch is synchronous. Person must have "id"
+                context.dispatch('follow', {'id': person});
+            }
+            context.dispatch('follow', context.state.user);
+            
+            //
+            if (channel.direct === 0) {
+                axios.put("/api/channels/"+response.group_id).catch(err => {
+                  console.log("make direct failed:", err);
+                });
+            }
+      }).catch(err => {
+        console.log("createChannel failed:",err);
+      });
+    },
+    // Get my not direct channels
+    getPublicChannels(context) {
+      return axios.get("/api/channels/user/1/"+ context.state.user.id).then(response => {
+        context.commit('setMyPublicChannels',response.data.groups);
+      }).catch(err => {
+        console.log("getPublicChannels failed:",err);
+      });
+    },
+    // Get my direct channels
+    getDirectChannels(context) {
+      return axios.get("/api/channels/user/2/"+ context.state.user.id).then(response => {
+        context.commit('setMyDirectChannels',response.data.groups);
+      }).catch(err => {
+        console.log("getDirectChannels failed:",err);
+      });
+    },
+    
     // Followers //
 
-    // follow someone, must supply {id: id} of user you want to follow
-    follow(context,user) {
-      return axios.post("/api/users/" + context.state.user.id + "/follow",user).then(response => {
-	context.dispatch('getFollowing');
+    // follow a group, must supply {id: id} of group you want to follow
+    follow(context,group) {
+      return axios.post("/api/users/" + context.state.user.id + "/follow",group).then(response => {
+        context.dispatch('getPublicChannels');
+        context.dispatch('getDirectChannels');
       }).catch(err => {
-	console.log("follow failed:",err);
+        console.log("follow failed:",err);
       });
     },
-    // unfollow someone, must supply {id: id} of user you want to unfollow
-    unfollow(context,user) {
-      return axios.delete("/api/users/" + context.state.user.id + "/follow/" + user.id).then(response => {
-	context.dispatch('getFollowing');
+    // unfollow a group, must supply {id: id} of group you want to unfollow
+    unfollow(context,group) {
+      return axios.delete("/api/users/" + context.state.user.id + "/follow/" + group.id).then(response => {
+        context.dispatch('getPublicChannels');
+        context.dispatch('getDirectChannels');
       }).catch(err => {
-	console.log("unfollow failed:",err);
+        console.log("unfollow failed:",err);
       });
     },
-    // get list of people you are following
-    getFollowing(context) {
-      return axios.get("/api/users/" + context.state.user.id + "/follow").then(response => {
-	context.commit('setFollowing',response.data.users);	
-      }).catch(err => {
-	console.log("following failed:",err);
-      });
-    },
-    // get list of people who are following you
-    getFollowers(context) {
-      return axios.get("/api/users/" + context.state.user.id + "/followers").then(response => {
-	context.commit('setFollowers',response.data.users);
-      }).catch(err => {
-	console.log("following failed:",err);
-      });
-    },
-    // get tweets of people you follow
-    getFeed(context) {
-      return axios.get("/api/users/" + context.state.user.id + "/feed").then(response => {
-	context.commit('setFeed',response.data.tweets);
-      }).catch(err => {
-	console.log("getFeed failed:",err);
-      });
-    },
-    // get list of people you are following
-    getFollowingView(context,user) {
-      return axios.get("/api/users/" + user.id + "/follow").then(response => {
-	context.commit('setFollowingView',response.data.users);	
-      }).catch(err => {
-	console.log("following failed:",err);
-      });
-    },
-    // get list of people who are following you
-    getFollowersView(context,user) {
-      return axios.get("/api/users/" + user.id + "/followers").then(response => {
-	context.commit('setFollowersView',response.data.users);
-      }).catch(err => {
-	console.log("following failed:",err);
-      });
-    },
-
   }
 });

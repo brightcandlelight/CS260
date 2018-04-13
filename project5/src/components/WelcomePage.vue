@@ -1,9 +1,10 @@
 <template>
   <div class="column">
     <img src="/static/images/red-bird.png"/>
-    <h1>Join Slack 2.0!</h1>
+    <h1>Follow the Red Bird. Or anyone else.</h1>
+    <h2>Make friends in high places.</h2>
     <form v-on:submit.prevent="register">
-      <p>1. Choose a user name (this is how you will be known by others on Slack 2.0).</p>
+      <p>1. Choose a user name (this is how you will be known by others on Red Bird).</p>
       <input class="narrow" v-model="username" placeholder="User Name">
       <p>2. Create an account.</p>
       <input class="wide" v-model="name" placeholder="First and Last Name"><br/>
