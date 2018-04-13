@@ -83,8 +83,9 @@ export default new Vuex.Store({
         context.commit('setLogin',true);
         context.commit('setRegisterError',"");
         context.commit('setLoginError',"");
-        context.dispatch('getFollowing');
-        context.dispatch('getFollowers');
+        //context.dispatch('getFollowing');
+        //context.dispatch('getFollowers');
+        context.dispatch('getDirectChannels');
       }).catch(error => {
         context.commit('setLogin',false);
         context.commit('setLoginError',"");
@@ -104,8 +105,9 @@ export default new Vuex.Store({
         context.commit('setLogin',true);
         context.commit('setRegisterError',"");
         context.commit('setLoginError',"");
-        context.dispatch('getFollowing');
-        context.dispatch('getFollowers');
+        //context.dispatch('getFollowing');
+        //context.dispatch('getFollowers');
+        context.dispatch('getDirectChannels');
       }).catch(error => {
         context.commit('setLogin',false);
         context.commit('setRegisterError',"");
@@ -201,8 +203,10 @@ export default new Vuex.Store({
                 // dispatch is synchronous. Person must have "id"
                 context.dispatch('follow', {'id': person});
             }
+            console.log("here1");
             context.dispatch('follow', context.state.user);
             
+            console.log("here2");
             //
             if (channel.direct === 0) {
                 axios.put("/api/channels/"+response.group_id).catch(err => {
@@ -215,7 +219,7 @@ export default new Vuex.Store({
     },
     // Get my not direct channels
     /*getPublicChannels(context) {
-      return axios.get("/api/channels/user/1/"+ context.state.user.id).then(response => {
+      return axios.get("/api/channels/user/0/"+ context.state.user.id).then(response => {
         context.commit('setMyPublicChannels',response.data.groups);
       }).catch(err => {
         console.log("getPublicChannels failed:",err);
@@ -223,11 +227,15 @@ export default new Vuex.Store({
     },*/
     // Get my direct channels
     getDirectChannels(context) {
-      return axios.get("/api/channels/user/2/"+ context.state.user.id).then(response => {
-        context.commit('setMyDirectChannels',response.data.groups);
-      }).catch(err => {
-        console.log("getDirectChannels failed:",err);
-      });
+      if (context.state.user.id && context.state.user.id != -1) {
+        return axios.get("/api/channels/user/1/"+ context.state.user.id).then(response => {
+          context.commit('setMyDirectChannels',response.data.groups);
+        }).catch(err => {
+          console.log("getDirectChannels failed:",err);
+        });
+      } else {
+        context.commit('setMyDirectChannels', []);
+      }
     },
     
     // Followers //
@@ -235,7 +243,7 @@ export default new Vuex.Store({
     // follow a group, must supply {id: id} of group you want to follow
     follow(context,group) {
       return axios.post("/api/users/" + context.state.user.id + "/follow",group).then(response => {
-        context.dispatch('getPublicChannels');
+        //context.dispatch('getPublicChannels');
         context.dispatch('getDirectChannels');
       }).catch(err => {
         console.log("follow failed:",err);
@@ -244,7 +252,7 @@ export default new Vuex.Store({
     // unfollow a group, must supply {id: id} of group you want to unfollow
     unfollow(context,group) {
       return axios.delete("/api/users/" + context.state.user.id + "/follow/" + group.id).then(response => {
-        context.dispatch('getPublicChannels');
+        //context.dispatch('getPublicChannels');
         context.dispatch('getDirectChannels');
       }).catch(err => {
         console.log("unfollow failed:",err);

@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <button class="alternate" type="submit" :to="{ name: 'CreateChannel', params: {gid: -1}}">Create</button>
-    <div v-for="channel in channels">
-      <p><router-link :to="{ name: 'UserList', params: {userID: channel.group_id}}"><span class="handle">{{channel.name}}</span></router-link> X</p>
-    </div>
+  <div v-if="loggedIn">
+    <button class="alternate" type="submit" v-on:click="create">Create</button>
+    <p>My Conversations</p>
     <div v-for="channel in directChannels">
       <p><router-link :to="{ name: 'UserList', params: {userID: channel.group_id}}"><span class="handle">{{channel.name}}</span></router-link> X</p>
     </div>
@@ -14,17 +12,21 @@
  export default {
    name: 'ShowMyChannels',
    computed: {
-     channels: function() {
-       return this.$store.getters.myPublicChannels;
+     loggedIn: function() {
+       return this.$store.getters.loggedIn;
      },
      directChannels: function() {
        return this.$store.getters.myDirectChannels;
      },
    },
    created: function() {
-     this.$store.dispatch('getPublicChannels');
      this.$store.dispatch('getDirectChannels');
    },
+   methods: {
+     create: function() {
+       this.$router.push({ name: 'CreateChannel', params: {gid: -1 }});
+     },
+   }
  }
 
 </script>

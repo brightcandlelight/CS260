@@ -1,7 +1,6 @@
 <template>
-  <div class="column">
+  <div class="column" v-if="loggedIn">
     <h1>Create a channel</h1>
-    <button class="alternate" type="submit">Back</button>
     <form v-on:submit.prevent="register">
       <p>Enter a name</p>
       <input class="narrow" v-model="channel.groupname" placeholder="Group Name">
@@ -21,14 +20,19 @@
  export default {
    name: 'CreateChannel',
    props: ['gid'],
-   /*data () {
+   data () {
      return {
-       groupname: '',
-       description: '',
-       people: [], // need id and name
+       //groupname: '',
+       //description: '',
+       //people: [], // need id and name
      }
-   },*/
+   },
+   watch: {
+   },
    computed: {
+     loggedIn: function() {
+       return this.$store.getters.loggedIn;
+     },
      registerError: function() {
        return this.$store.getters.registerError;
      },
@@ -37,8 +41,9 @@
      },
    },
    created: function() {
-     if (gid !== -1) {
-        this.$store.dispatch('getChannel', gid);
+     if (this.gid && this.gid !== -1) {
+        console.log("HERE "+this.gid);
+        this.$store.dispatch('getChannel', this.gid);
      } else {
         this.$store.dispatch('clearChannel');
      }

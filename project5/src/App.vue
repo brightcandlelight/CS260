@@ -1,15 +1,17 @@
 <template>
   <div id="app">
     <app-header/>
+    <show-my-channels/>
     <router-view/>
   </div>
 </template>
 
 <script>
  import AppHeader from './components/AppHeader';
+ import ShowMyChannels from './components/ShowMyChannels';
  export default {
    name: 'App',
-   components: { AppHeader }
+   components: { AppHeader, ShowMyChannels }
  }
 </script>
 

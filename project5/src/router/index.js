@@ -4,6 +4,7 @@ import HomePage from '@/components/HomePage'
 import SearchResults from '@/components/SearchResults'
 import HashTag from '@/components/HashTag'
 import UserPage from '@/components/UserPage'
+import CreateChannel from '@/components/CreateChannel'
 
 Vue.use(Router)
 
@@ -30,5 +31,10 @@ export default new Router({
       name: 'UserPage',
       component: UserPage
     },
+    {
+      path: '/create/:gid',
+      name: 'CreateChannel',
+      component: CreateChannel
+    }
   ]
 })

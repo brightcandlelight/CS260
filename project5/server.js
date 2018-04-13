@@ -112,17 +112,22 @@ app.put('/api/channels/:gid', (req, res) => {
 
 // Create a channel
 app.post('/api/channels', (req, res) => {
-  if (!req.body.name || !req.body.description || !req.body.public || !req.body.direct)
-    return res.status(400).send();
-  knex('groups').where('name', req.body.name).first().then(user => {
+  console.log(req.body);
+  if (!req.body.groupname || !req.body.description 
+        || typeof req.body.public === 'undefined' || typeof req.body.direct === 'undefined') {
+    console.log("HERE");
+    return res.status(400).send(); 
+  }
+  knex('groups').where('name', req.body.groupname).first().then(user => {
     if (user !== undefined) {
-      res.status(403).send("Group already exists");
+      res.status(403).send("Name already exists");
       throw new Error('abort');
     }
   }).then(() => {
-    return knex('groups').insert({name: req.body.name, description:req.body.description,
+    return knex('groups').insert({name: req.body.groupname, description:req.body.description,
                                  public:req.body.public, direct: 0}); // make the call to direct on your own
   }).then(group => {
+    console.log(group);
     res.status(200).json({group:group});
     return;
   }).catch(error => {
@@ -192,7 +197,7 @@ app.delete('/api/users/:id', (req, res) => {
 // User Tweets //
 
 // Get the channels a user is subscribed to
-app.get('/api/channels/user/1/:id', (req, res) => {
+/*app.get('/api/channels/user/1/:id', (req, res) => {
   let id = parseInt(req.params.id);
   knex('followers').join('groups','followers.follows','groups.group_id')
     .where('followers.user_id',id)
@@ -204,10 +209,11 @@ app.get('/api/channels/user/1/:id', (req, res) => {
       console.log(error);
       res.status(500).json({ error });
     });
-});
+});*/
 
 // Get the direct message groups a user is subscribed to
-app.get('/api/channels/user/0/:id', (req, res) => {
+app.get('/api/channels/user/1/:id', (req, res) => {
+  console.log("here6");
   let id = parseInt(req.params.id);
   knex('followers').join('groups','followers.follows','groups.group_id')
     .where('followers.user_id',id)
@@ -305,10 +311,15 @@ app.post('/api/users/:id/follow', (req,res) => {
   let id = parseInt(req.params.id);
   // id of the group who is being followed
   let follows = req.body.id;
+  console.log(follows);
   // make sure both of these users exist
   knex('users').where('id',id).first().then(user => {
     return knex('groups').where('group_id',follows).first();
   }).then(group => {
+    if (!group) {
+         throw new Error("Channel does not exist");
+    }
+
     // Make sure the group is a channel (open to join)
     if (group.channel === 0) {
          throw new Error("Channel not open to join.");
