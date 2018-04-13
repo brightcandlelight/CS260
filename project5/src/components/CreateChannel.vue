@@ -34,7 +34,7 @@
        return this.$store.getters.loggedIn;
      },
      registerError: function() {
-       return this.$store.getters.registerError;
+       return this.$store.getters.channelError;
      },
      channel: function() {
        return this.$store.getters.channel;

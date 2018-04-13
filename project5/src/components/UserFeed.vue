@@ -1,10 +1,10 @@
 <template>
-  <div class="feed">
+  <div class="feed" v-if="loggedIn">
     <div>
       <form v-on:submit.prevent="tweet" class="tweetForm">
 	<textarea v-model="text" placeholder=""/><br/>
 	<div class="buttonWrap">
-	  <button class="primary" type="submit">Tweet</button>
+	  <button class="primary" type="submit">Send</button>
 	</div>
       </form>
     </div>
@@ -21,18 +21,26 @@
        text: '',
      }
    },
+   watch: {
+     '$route.params.gid': function(gid) {
+        this.$store.dispatch('getChannel', this.$route.params.gid);
+     },
+   },
    components: { FeedList },
    computed: {
      feed: function() {
-       return this.$store.getters.feed;
+       return this.$store.getters.channel;
+     },
+     loggedIn: function() {
+       return this.$store.getters.loggedIn;
      },
    },
    created: function() {
-     this.$store.dispatch('getFeed');
+     this.$store.dispatch('getChannel', this.$route.params.gid);
    },
    methods: {
      tweet: function() {
-       this.$store.dispatch('addTweet',{
+       this.$store.dispatch('addChannelMsg',{
          tweet: this.text,
        }).then(tweet => {
 	 this.text = "";

@@ -3,7 +3,7 @@
     <button class="alternate" type="submit" v-on:click="create">Create</button>
     <p>My Conversations</p>
     <div v-for="channel in directChannels">
-      <p><router-link :to="{ name: 'UserList', params: {userID: channel.group_id}}"><span class="handle">{{channel.name}}</span></router-link> X</p>
+      <p><router-link :to="{ name: 'Channel', params: {userID: channel.group_id, gid: channel.group_id }}"><span class="handle">{{channel.name}}</span></router-link> X</p>
     </div>
   </div>
 </template>

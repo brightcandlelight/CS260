@@ -22,6 +22,7 @@ export default new Vuex.Store({
     myDirectChannels: [],
     personList: [],
     allPeopleList: [],
+    channelError: '',
   },
   getters: {
     user: state => state.user,
@@ -36,6 +37,7 @@ export default new Vuex.Store({
     myDirectChannels: state => state.myDirectChannels,
     personList: state => state.personList,
     allPeopleList: state => state.allPeopleList,
+    channelError: state => state.channelError,
   },
   mutations: {
     setUser (state, user) {
@@ -74,6 +76,9 @@ export default new Vuex.Store({
     setAllPeopleList(state, feed) {
       state.allPeopleList = feed;
     },
+    setChannelError(state,msg) {
+      state.channelError = msg;
+    }
   },
   actions: {
     // Registration, Login //
@@ -137,10 +142,11 @@ export default new Vuex.Store({
     // Get channel messages 
     getChannel(context,gid) {
       return axios.get("/api/channels/" + gid + "/").then(response => {
+        console.log("GetChannel: "+response.data.tweets+" "+gid);
         context.commit('setChannel',response.data.tweets);
         context.commit('setChannelId', gid);
       }).catch(err => {
-        console.log("getChannel failed:",err);
+        console.log("getChannel failed:",err.response.data);
       });
     },
     // Get channel info
@@ -166,10 +172,11 @@ export default new Vuex.Store({
     },
     // Search text in my channels //
     doSearch(context,keywords) {
-      return axios.get("/api/channels/searchText/" + keywords).then(response => {
+      console.log(keywords);
+      return axios.post("/api/channels/searchText/" + context.state.user.id, {'keywords': keywords}).then(response => {
         context.commit('setChannel',response.data.tweets);
       }).catch(err => {
-        console.log("doSearch failed:",err);
+        console.log("doSearch failed:",err.response);
       });
     },
     allPeopleSearch(context,keywords) {
@@ -197,24 +204,29 @@ export default new Vuex.Store({
     },*/
     // Create channel //
     createChannel(context,channel) {
+        context.commit('setChannelError', '');
         return axios.post("/api/channels/", channel).then(response => {
             // channel.people need not include yourself.
             for (person in channel.people) {
                 // dispatch is synchronous. Person must have "id"
-                context.dispatch('follow', {'id': person});
+                context.dispatch('follow', person);
             }
-            console.log("here1");
-            context.dispatch('follow', context.state.user);
+            console.log("here1 "+context.state.user.id);
+            context.dispatch('follow', {'id': response.data.group[0]}); //follow this group
             
-            console.log("here2");
+            console.log(response.data.group[0]);
             //
-            if (channel.direct === 0) {
-                axios.put("/api/channels/"+response.group_id).catch(err => {
-                  console.log("make direct failed:", err);
+            if (channel.direct === 1) {
+		console.log("making direct channel");
+                axios.put("/api/channels/"+response.data.group[0]).catch(err => {
+                  console.log("make direct failed:", err.response.data);
+                  context.commit('setChannelError', err.response.data);
                 });
             }
       }).catch(err => {
         console.log("createChannel failed:",err);
+        console.log("failed: ",err.response.data);
+        context.commit('setChannelError', err.response.data);
       });
     },
     // Get my not direct channels
@@ -229,6 +241,7 @@ export default new Vuex.Store({
     getDirectChannels(context) {
       if (context.state.user.id && context.state.user.id != -1) {
         return axios.get("/api/channels/user/1/"+ context.state.user.id).then(response => {
+          console.log(response.data+" "+context.state.user.id);
           context.commit('setMyDirectChannels',response.data.groups);
         }).catch(err => {
           console.log("getDirectChannels failed:",err);

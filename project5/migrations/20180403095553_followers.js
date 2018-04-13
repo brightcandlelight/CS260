@@ -3,7 +3,8 @@ exports.up = function(knex, Promise) {
     knex.schema.createTable('followers', function(table) {
       table.increments('id').primary();
       table.integer('user_id').unsigned().notNullable().references('id').inTable('users');
-      table.integer('follows_id').unsigned().notNullable().references('id').inTable('users');
+      table.integer('follows_id').unsigned().notNullable();
+      table.dateTime('created');
     }),
   ]);
 };

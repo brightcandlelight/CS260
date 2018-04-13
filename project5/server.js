@@ -46,6 +46,7 @@ app.post('/api/login', (req, res) => {
 
 // Get all the entries for one of your channels
 app.get('/api/channels/:gid', (req, res) => {
+  console.log("here7");
   let offset = 0;
   if (req.query.offset)
     offset = parseInt(req.query.offset);
@@ -54,18 +55,29 @@ app.get('/api/channels/:gid', (req, res) => {
     limit = parseInt(req.query.limit);
 
   let gid = parseInt(req.params.gid);
+
+  console.log("gid:"+gid);
+
   // get user record
-  knex('tweets').where('group_id',gid)
+  knex('users').join('tweets', 'users.id', 'tweets.user_id')
+    .where('group_id',gid)
     .orderBy('created', 'desc')
     .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
     res.status(200).json({tweets:tweets});
   }).catch(error => {
+    console.log(error);
     res.status(500).json({ error });
   });
 });
 
-/*app.get('/api/tweets/search', (req, res) => {
-  if (!req.query.keywords)
+// search for text in my subscribed channels
+app.post('/api/channels/searchText/:id', (req, res) => {
+  // person id
+  console.log("here9 "+req.params.id+ " "+req.body.keywords);
+  let id = parseInt(req.params.id);
+  if (typeof id === 'undefined') { res.status(404).send(); }
+
+  if (!req.body.keywords)
     return res.status(400).send();
   let offset = 0;
   if (req.query.offset)
@@ -74,34 +86,41 @@ app.get('/api/channels/:gid', (req, res) => {
   if (req.query.limit)
     limit = parseInt(req.query.limit);
   knex('users').join('tweets','users.id','tweets.user_id')
-    .whereRaw("MATCH (tweet) AGAINST('" + req.query.keywords + "')")
+    .join('followers', 'followers.follows_id', 'tweets.group_id')
+    .join('groups', 'groups.group_id', 'tweets.group_id')
+    .whereRaw("MATCH (tweet) AGAINST('" + req.body.keywords + "')")
+    .where('followers.user_id', id)
     .orderBy('created','desc')
     .limit(limit)
     .offset(offset)
-    .select('tweet','username','name','created','users.id as userID').then(tweets => {
+    .select('tweet','username','users.name','tweets.created','users.id as userID', 'groups.name as groupName').then(tweets => {
       res.status(200).json({tweets:tweets});
     }).catch(error => {
       console.log(error);
       res.status(500).json({ error });
     });
-});*/
+});
 
 // Get all the public channels
-app.get('/api/channels', (req, res) => {
+/*app.get('/api/channels', (req, res) => {
   // let id = parseInt(req.params.id);
   // get user record
-  knex('groups').where('public',1).where('direct',0).select('group_id','name','description','public', 'channel').then(groups => {
+  knex('groups').where('public',1).where('direct',0).select('group_id','name','description','public', 'direct').then(groups => {
     res.status(200).json({groups:groups});
   }).catch(error => {
     res.status(500).json({ error });
   });
-});
+});*/
 
 // Make that channel direct
 app.put('/api/channels/:gid', (req, res) => {
   let gid = parseInt(req.params.gid);
-  knex('groups').where('group_id', gid).update({ 'channel': 0 }).then(() => {
-      res.status(204);
+  console.log(gid);
+  if (typeof gid === 'undefined') { return res.status(400).send(); }
+
+  knex('groups').where('group_id', gid).update({ 'direct': 1 }).then(() => {
+      console.log("updated");
+      res.status(200).json({groups: 'none'});
   }).catch(error => {
     if (error.message !== 'abort') {
       console.log(error);
@@ -115,7 +134,7 @@ app.post('/api/channels', (req, res) => {
   console.log(req.body);
   if (!req.body.groupname || !req.body.description 
         || typeof req.body.public === 'undefined' || typeof req.body.direct === 'undefined') {
-    console.log("HERE");
+    //console.log("HERE");
     return res.status(400).send(); 
   }
   knex('groups').where('name', req.body.groupname).first().then(user => {
@@ -127,6 +146,7 @@ app.post('/api/channels', (req, res) => {
     return knex('groups').insert({name: req.body.groupname, description:req.body.description,
                                  public:req.body.public, direct: 0}); // make the call to direct on your own
   }).then(group => {
+    console.log("Creating group");
     console.log(group);
     res.status(200).json({group:group});
     return;
@@ -213,13 +233,13 @@ app.delete('/api/users/:id', (req, res) => {
 
 // Get the direct message groups a user is subscribed to
 app.get('/api/channels/user/1/:id', (req, res) => {
-  console.log("here6");
   let id = parseInt(req.params.id);
-  knex('followers').join('groups','followers.follows','groups.group_id')
+  console.log("here6 "+req.params.id);
+  knex('followers').join('groups','followers.follows_id','groups.group_id')
     .where('followers.user_id',id)
-    .where('groups.channel', 0)
+    .where('groups.direct', 1)
     .orderBy('name','asc') //asc is default anyway but yeah
-    .select('group_id', 'name','description', 'public', 'channel').then(tweets => {
+    .select('group_id', 'name','description', 'public', 'direct').then(tweets => {
       res.status(200).json({groups:tweets});
     }).catch(error => {
       console.log(error);
@@ -305,13 +325,13 @@ app.get('/api/tweets/hash/:hashtag', (req, res) => {
 
 // Followers //
 
-// follow a group
+// follow a group. Pass in object with id.
 app.post('/api/users/:id/follow', (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
   // id of the group who is being followed
   let follows = req.body.id;
-  console.log(follows);
+  console.log("FOLLOW: "+follows);
   // make sure both of these users exist
   knex('users').where('id',id).first().then(user => {
     return knex('groups').where('group_id',follows).first();
