@@ -55,14 +55,14 @@ app.get('/api/channels/:gid', (req, res) => {
 
   let gid = parseInt(req.params.gid);
   // get user record
-  knex('tweets').where('group_id',gid).
+  knex('tweets').where('group_id',gid)
     .orderBy('created', 'desc')
     .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
     res.status(200).json({tweets:tweets});
   }).catch(error => {
     res.status(500).json({ error });
   });
-});*/
+});
 
 /*app.get('/api/tweets/search', (req, res) => {
   if (!req.query.keywords)
@@ -100,7 +100,7 @@ app.get('/api/channels', (req, res) => {
 // Make that channel direct
 app.put('/api/channels/:gid', (req, res) => {
   let gid = parseInt(req.params.gid);
-  knex('groups').where('group_id', gid).update({ 'channel', 0 }).then(() => {
+  knex('groups').where('group_id', gid).update({ 'channel': 0 }).then(() => {
       res.status(204);
   }).catch(error => {
     if (error.message !== 'abort') {
@@ -108,7 +108,7 @@ app.put('/api/channels/:gid', (req, res) => {
       res.status(500).json({ error });
     }
   });
-}
+});
 
 // Create a channel
 app.post('/api/channels', (req, res) => {
@@ -121,7 +121,7 @@ app.post('/api/channels', (req, res) => {
     }
   }).then(() => {
     return knex('groups').insert({name: req.body.name, description:req.body.description,
-                                 public:req.body.public, direct: req.body.direct});
+                                 public:req.body.public, direct: 0}); // make the call to direct on your own
   }).then(group => {
     res.status(200).json({group:group});
     return;

@@ -3,20 +3,6 @@
     <h1>Create a channel</h1>
     <button class="alternate" type="submit">Back</button>
     <form v-on:submit.prevent="register">
-      <p>Is this public? Can anyone join?</p>
-      
-      <form action="">
-        <input type="radio" v-model="channel.public" name="public" value="1"> Public<br>
-        <input type="radio" v-model="channel.public" name="public" value="0"> Private<br>
-      </form>
-      
-      <p>Is this a channel or a direct conversation? Direct conversation does NOT allow changing member list</p>
-      
-      <form action="">
-        <input type="radio" v-model="channel.direct" name="channel.direct" value="0"> Channel<br>
-        <input type="radio" v-model="channel.direct" name="channel.direct" value="1"> Direct Conversation<br>
-      </form>
-      
       <p>Enter a name</p>
       <input class="narrow" v-model="channel.groupname" placeholder="Group Name">
       <p>Enter a description</p>
@@ -40,8 +26,6 @@
        groupname: '',
        description: '',
        people: [], // need id and name
-       direct: '', //int
-       public: '', //int
      }
    },*/
    computed: {
@@ -64,8 +48,8 @@
        this.$store.dispatch('createChannel',{
          groupname: this.channel.groupname,
          description: this.channel.description,
-         direct: this.channel.direct,
-         public: this.channel.public,
+         direct: 1,
+         public: 0,
          people: this.channel.people,
        });
      }

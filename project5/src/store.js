@@ -18,7 +18,7 @@ export default new Vuex.Store({
     userView: [],
     channel: [],
     channelId: '',
-    myPublicChannels: [],
+    //myPublicChannels: [],
     myDirectChannels: [],
     personList: [],
     allPeopleList: [],
@@ -32,7 +32,7 @@ export default new Vuex.Store({
     channel: state => state.channel,
     feedView: state => state.feedView,
     userView: state => state.userView,
-    myPublicChannels: state => state.myPublicChannels,
+    //myPublicChannels: state => state.myPublicChannels,
     myDirectChannels: state => state.myDirectChannels,
     personList: state => state.personList,
     allPeopleList: state => state.allPeopleList,
@@ -65,9 +65,9 @@ export default new Vuex.Store({
     setPersonList (state, feed) {
       state.personList = feed;
     },
-    setMyPublicChannels (state, feed) {
-      state.myPublicChannels = feed;
-    },
+   // setMyPublicChannels (state, feed) {
+   //   state.myPublicChannels = feed;
+   // },
     setMyDirectChannels (state, feed) {
       state.myDirectChannels = feed;
     },
@@ -177,6 +177,7 @@ export default new Vuex.Store({
         console.log("allPeopleSearch failed:",err);
       });
     },
+    // See the people in a channel
     personSearch(context,gid) {
       return axios.get("/api/channels/"+gid+"/members/").then(response => {
         context.commit('setPersonList',response.data.tweets);
@@ -185,13 +186,13 @@ export default new Vuex.Store({
       });
     },
     // Get public channels
-    searchPublicChannelName(context,keywords) {
+    /*searchPublicChannelName(context,keywords) {
       return axios.get("/api/channels/search/"+keywords).then(response => {
         context.commit('setChannel',response.data.tweets);
       }).catch(err => {
         console.log("searchPublicChannelName failed:",err);
       });
-    },
+    },*/
     // Create channel //
     createChannel(context,channel) {
         return axios.post("/api/channels/", channel).then(response => {
@@ -213,13 +214,13 @@ export default new Vuex.Store({
       });
     },
     // Get my not direct channels
-    getPublicChannels(context) {
+    /*getPublicChannels(context) {
       return axios.get("/api/channels/user/1/"+ context.state.user.id).then(response => {
         context.commit('setMyPublicChannels',response.data.groups);
       }).catch(err => {
         console.log("getPublicChannels failed:",err);
       });
-    },
+    },*/
     // Get my direct channels
     getDirectChannels(context) {
       return axios.get("/api/channels/user/2/"+ context.state.user.id).then(response => {
