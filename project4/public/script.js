@@ -5,7 +5,8 @@ var app = new Vue({
     text: '',
     drag: {},
     author: '',
-    subject: ''
+    subject: '',
+    url: 'http://159.89.43.108:3001',
   },
   created: function() {
     this.getItems();
@@ -21,7 +22,7 @@ var app = new Vue({
         if (this.subject === '' || this.author === '') {
             alert("Please fill out the subject box and author");
         } else {
-          axios.post("http://localhost:3000/api/items", {
+          axios.post(this.url+"/api/items", {
             text: this.text,
             author: this.author,
             subject: this.subject
@@ -36,7 +37,7 @@ var app = new Vue({
         }
     },
     deleteItem: function(item) {
-      axios.delete("http://localhost:3000/api/items/" + item.id).then(response => {
+      axios.delete(this.url+"/api/items/" + item.id).then(response => {
         this.getItems();
         return true;
       }).catch(err => {
@@ -49,7 +50,7 @@ var app = new Vue({
       this.drag = item;
     },
     dropItem: function(item) {
-      axios.put("http://localhost:3000/api/items/" + this.drag.id, {
+      axios.put(this.url+"/api/items/" + this.drag.id, {
         text: this.drag.text,
         orderChange: true,
         orderTarget: item.id,
@@ -62,14 +63,14 @@ var app = new Vue({
       });
     },
     getItems: function() {
-      axios.get("http://localhost:3000/api/items").then(response => {
+      axios.get(this.url+"/api/items").then(response => {
 	this.items = response.data;
 	return true;
       }).catch(err => {
       });
     },
     openItem: function(item) {
-      window.location.assign("http://localhost:3000/note.html?id="+item.id);   
+      window.location.assign(this.url+"/note.html?id="+item.id);   
     }
   }
 });
