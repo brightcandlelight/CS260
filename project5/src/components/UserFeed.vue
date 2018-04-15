@@ -1,6 +1,7 @@
 <template>
   <div class="feed" v-if="loggedIn">
-    <div>
+    <p class="error"></p>
+    <div v-if="noError">
       <form v-on:submit.prevent="tweet" class="tweetForm">
 	<textarea v-model="text" placeholder=""/><br/>
 	<div class="buttonWrap">
@@ -8,7 +9,7 @@
 	</div>
       </form>
     </div>
-    <feed-list v-bind:feed="feed" />
+    <feed-list v-bind:feed="feed" v-if="noError" />
   </div>
 </template>
 
@@ -34,9 +35,18 @@
      loggedIn: function() {
        return this.$store.getters.loggedIn;
      },
+     registerError: function() {
+       return this.$store.getters.channelError;
+     },
+     noError: function() {
+       if (this.$store.getters.channelError !== "" || this.$store.getters.channel === [] || this.$store.getters.channel == "" ) { return false; }
+       return true;
+     }
    },
    created: function() {
      this.$store.dispatch('getChannel', this.$route.params.gid);
+     console.log("here11."+this.$store.getters.channel+".");
+     //console.log(
    },
    methods: {
      tweet: function() {

@@ -1,21 +1,13 @@
 <template>
-  <div id="container">
   <div id="app">
     <app-header/>
     <table style="width:100%">
     <tr>
-    <td valign="top" >
+    <td valign="top">
        <show-my-channels/></td>
     <td valign="top">    
        <router-view/></td>
     </tr></table>
-    <br>
-    <br>
-    <div id="footer">
-        <br>
-        <a href="https://github.com/brightcandlelight/CS260/tree/master/project5">Creative Project 5 Github</a>
-    </div></div>
-
   </div>
 </template>
 
@@ -30,12 +22,9 @@
 
 <style>
  /* https://color.adobe.com/CS04-color-theme-1994456/?showPublished=true */
- div {
-   //display: relative !important;
- }
  body {
      font-size: 18px;
-     //padding: 20px 100px 0px 100px;
+     padding: 20px 100px 0px 100px;
      font-family: 'Avenir', Helvetica, Arial, sans-serif;
      -webkit-font-smoothing: antialiased;
      -moz-osx-font-smoothing: grayscale;
@@ -88,56 +77,4 @@
  .column {
      width: 800px;
  }
- #footer a {
-	padding-top: 10px;
-	color: white !important;
-	text-decoration: none;
- }
-
- #container {
-   min-height:100%;
-   position:relative;
-   min-width:100%;
-   
- }
-
- #header {
-   padding:10px;
- }
-
- #body {
-   padding:10px;
-   padding-bottom:60px;   /* Height of the footer */
-   padding-left:15px;
-   padding-right:15px;
-   background: #A9A9A9;
- }
-
- #container2 {
-   padding-top: 15px;
-   padding-left:15px;
-   padding-right:15px;
-   padding-bottom:30px;
-   border-radius: 6px;
-   margin: auto;
-   max-width: 700px;
- }
-
- #footer {
-   position:absolute;
-   bottom:0;
-   float: left;
-   width:100%;
-   height:60px;   /* Height of the footer */
-   background: #444;
-   text-align: center;
-   color: white !important;
-   text-decoration: none;
-   padding: 0px 0px 0px 0px !important;
-   margin: 0px !important;
-   //display: block;
-   overflow:hidden;
-   left:0px;
- }
-
 </style>

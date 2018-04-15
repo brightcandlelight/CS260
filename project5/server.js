@@ -45,7 +45,7 @@ app.post('/api/login', (req, res) => {
 // Channels //
 
 // Get all the entries for one of your channels
-app.get('/api/channels/:gid', (req, res) => {
+app.get('/api/channels/:gid/:id', (req, res) => {
   console.log("here7");
   let offset = 0;
   if (req.query.offset)
@@ -55,19 +55,32 @@ app.get('/api/channels/:gid', (req, res) => {
     limit = parseInt(req.query.limit);
 
   let gid = parseInt(req.params.gid);
+  let id = parseInt(req.params.id);
 
   console.log("gid:"+gid);
+  console.log("id:"+id);
+
+  knex('followers').where('user_id', id).where('follows_id', gid).first().then(user => {
+      console.log("HERE10"+user);
+      if (typeof user === 'undefined') {
+           res.status(500).json( "Not authorized" );
+           sent = 1;
+           return;
+      } else {
+
 
   // get user record
   knex('users').join('tweets', 'users.id', 'tweets.user_id')
     .where('group_id',gid)
-    .orderBy('created', 'asc')
+    .orderBy('created', 'desc')
     .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
     res.status(200).json({tweets:tweets});
   }).catch(error => {
     console.log(error);
     res.status(500).json({ error });
   });
+
+  }});
 });
 
 // search for text in my subscribed channels
@@ -251,8 +264,21 @@ app.get('/api/channels/user/1/:id', (req, res) => {
 app.post('/api/channels/:id/:gid', (req, res) => {
   let id = parseInt(req.params.id);
   let gid = parseInt(req.params.gid);
+  let sent =0;
+  knex('followers').where('user_id', id).where('follows_id', gid).first().then(user => {
+      console.log("HERE10"+user);
+      if (typeof user === 'undefined') { 
+           res.status(500).json( "Not authorized" ); 
+           sent = 1;
+           return; 
+      } else {
+
+  if (sent == 1) { return; }
+  console.log("here10");
+
   knex('users').where('id',id).first().then(user => {
-    return knex('tweets').insert({user_id: id, tweet:req.body.tweet, created: new Date(),group_id: gid});
+   return knex('tweets').insert({user_id: id, tweet:req.body.tweet, created: new Date(),group_id: gid});
+   // }); //.catch(error => { res.status(500).json({error}); } );
   }).then(ids => {
     return knex('tweets').where('id',ids[0]).first();
   }).then(tweet => {
@@ -262,6 +288,8 @@ app.post('/api/channels/:id/:gid', (req, res) => {
     console.log(error);
     res.status(500).json({ error });
   });
+
+  }});
 });
 
 /*

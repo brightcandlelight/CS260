@@ -2,8 +2,9 @@
   <nav>
     <ul id="menu">
       <li><img src="/static/images/red-bird.png"/></li>
+      <li>Messenger</li>
       <li class="right" v-if="loggedIn">
-	{{user.username}} <a @click="logout" href="#">Logout</a></p>
+	{{user.username}} <a @click="logout" href="/">Logout</a></p>
       </li>
       <li class="right" v-else>
 	<form v-on:submit.prevent="login">
@@ -59,6 +60,7 @@
          this.email = '';
          this.password = '';
        });
+       this.$router.push({ path: '/' });
      },
      logout: function() {
        this.$store.dispatch('logout');
@@ -87,6 +89,7 @@
      text-align: center;
      line-height: 50px;
      color: #666;
+     vertical-align:middle;
  }
  /*Active color*/
  li a.active {

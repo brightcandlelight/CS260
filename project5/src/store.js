@@ -141,12 +141,15 @@ export default new Vuex.Store({
     },
     // Get channel messages 
     getChannel(context,gid) {
-      return axios.get("/api/channels/" + gid + "/").then(response => {
+      context.commit('setChannelError','');
+      let id = context.state.user.id ? context.state.user.id : 0;
+      return axios.get("/api/channels/" + gid + "/"+id).then(response => {
         console.log("GetChannel: "+response.data.tweets+" "+gid);
         context.commit('setChannel',response.data.tweets);
         context.commit('setChannelId', gid);
       }).catch(err => {
         console.log("getChannel failed:",err.response.data);
+        context.commit('setChannelError', err.response.data);
       });
     },
     // Get channel info
@@ -275,7 +278,7 @@ export default new Vuex.Store({
     },
     // unfollow a group, must supply {id: id} of group you want to unfollow
     unfollow(context,group) {
-      return axios.delete("/api/users/" + context.state.user.id + "/follow/" + group.id).then(response => {
+      return axios.delete("/api/users/" + context.state.user.id + "/follow/" + group).then(response => {
         //context.dispatch('getPublicChannels');
         context.dispatch('getDirectChannels');
       }).catch(err => {
