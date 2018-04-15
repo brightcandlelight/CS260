@@ -1,16 +1,11 @@
 <template>
   <div class="column" v-if="loggedIn">
-    <h1>Create a channel</h1>
+    <h1>Create a conversation</h1>
     <form v-on:submit.prevent="register">
-      <p>Enter a name</p>
-      <input class="narrow" v-model="channel.groupname" placeholder="Group Name">
-      <p>Enter a description</p>
-      <input class="narrow" v-model="channel.description" placeholder="Description">
-      <p>Invite People</p>
+      <p>Connect with</p>
+      <input v-model="channel.people" placeholder="Person Username"></input>     
       
-      <p>?</p>
-      
-      <button class="alternate" type="submit">Create</button>
+      <button class="alternate" type="submit">Go</button>
     </form>
     <p class="error">{{registerError}}</p>
   </div>
@@ -51,8 +46,8 @@
    methods: {
      register: function() {
        this.$store.dispatch('createChannel',{
-         groupname: this.channel.groupname,
-         description: this.channel.description,
+         groupname: this.channel.people,
+         description: '',
          direct: 1,
          public: 0,
          people: this.channel.people,

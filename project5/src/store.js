@@ -205,14 +205,22 @@ export default new Vuex.Store({
     // Create channel //
     createChannel(context,channel) {
         context.commit('setChannelError', '');
-        return axios.post("/api/channels/", channel).then(response => {
+        var names = [channel.groupname, context.state.user.username];
+        names.sort();
+        channel.groupname = names[0]+ " & "+names[1];
+        return axios.get("/api/users/name/"+channel.people).then(response => {
+          let pid = response.data;
+          console.log("create0"+pid);
+          axios.post("/api/channels/", channel).then(response => {
             // channel.people need not include yourself.
-            for (person in channel.people) {
+            console.log("follow1:"+pid+ " "+response);
+            //for (person in channel.people) {
                 // dispatch is synchronous. Person must have "id"
-                context.dispatch('follow', person);
-            }
+            console.log("Follow: "+pid);
+            context.dispatch('follow', {'id': response.data.group[0], 'pid':pid});
+            //}
             console.log("here1 "+context.state.user.id);
-            context.dispatch('follow', {'id': response.data.group[0]}); //follow this group
+            context.dispatch('follow', {'id': response.data.group[0], 'pid': context.state.user.id}); //follow this group
             
             console.log(response.data.group[0]);
             //
@@ -223,6 +231,9 @@ export default new Vuex.Store({
                   context.commit('setChannelError', err.response.data);
                 });
             }
+         }).catch(err=> {
+            context.commit('setChannelError', err.response.data);
+         });
       }).catch(err => {
         console.log("createChannel failed:",err);
         console.log("failed: ",err.response.data);
@@ -255,7 +266,7 @@ export default new Vuex.Store({
 
     // follow a group, must supply {id: id} of group you want to follow
     follow(context,group) {
-      return axios.post("/api/users/" + context.state.user.id + "/follow",group).then(response => {
+      return axios.post("/api/users/" + group.pid + "/follow",group).then(response => {
         //context.dispatch('getPublicChannels');
         context.dispatch('getDirectChannels');
       }).catch(err => {

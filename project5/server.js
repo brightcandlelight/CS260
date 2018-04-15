@@ -1,7 +1,7 @@
 // Express Setup //
 const express = require('express');
 const bodyParser = require("body-parser");
-
+const when = require('when');
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,7 +61,7 @@ app.get('/api/channels/:gid', (req, res) => {
   // get user record
   knex('users').join('tweets', 'users.id', 'tweets.user_id')
     .where('group_id',gid)
-    .orderBy('created', 'desc')
+    .orderBy('created', 'asc')
     .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
     res.status(200).json({tweets:tweets});
   }).catch(error => {
@@ -71,7 +71,7 @@ app.get('/api/channels/:gid', (req, res) => {
 });
 
 // search for text in my subscribed channels
-app.post('/api/channels/searchText/:id', (req, res) => {
+/*app.post('/api/channels/searchText/:id', (req, res) => {
   // person id
   console.log("here9 "+req.params.id+ " "+req.body.keywords);
   let id = parseInt(req.params.id);
@@ -99,7 +99,7 @@ app.post('/api/channels/searchText/:id', (req, res) => {
       console.log(error);
       res.status(500).json({ error });
     });
-});
+});*/
 
 // Get all the public channels
 /*app.get('/api/channels', (req, res) => {
@@ -131,15 +131,15 @@ app.put('/api/channels/:gid', (req, res) => {
 
 // Create a channel
 app.post('/api/channels', (req, res) => {
-  console.log(req.body);
-  if (!req.body.groupname || !req.body.description 
+  console.log("CREATE: "+req.body.groupname+ " "+req.body.description);
+  if (!req.body.groupname || typeof req.body.description === 'undefined'
         || typeof req.body.public === 'undefined' || typeof req.body.direct === 'undefined') {
-    //console.log("HERE");
+    console.log("HERE");
     return res.status(400).send(); 
   }
   knex('groups').where('name', req.body.groupname).first().then(user => {
     if (user !== undefined) {
-      res.status(403).send("Name already exists");
+      res.status(403).send("Conversation already exists");
       throw new Error('abort');
     }
   }).then(() => {
@@ -325,13 +325,31 @@ app.get('/api/tweets/hash/:hashtag', (req, res) => {
 
 // Followers //
 
+app.get('/api/users/name/:id', (req,res) => {
+  let id = req.params.id;
+  console.log("GetUser:"+id);
+  knex('users').where('username', id).first().then(user => {
+        if (!user) { throw new Error("Username does not exist") };
+        return user.id;
+     }).then( id => {res.status(200).json(id);} ).catch(error => { console.log(error); res.status(500).json("Username does not exist."); });
+});
+
 // follow a group. Pass in object with id.
 app.post('/api/users/:id/follow', (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
   // id of the group who is being followed
-  let follows = req.body.id;
-  console.log("FOLLOW: "+follows);
+  let follows;
+  if (req.body.id) { follows = req.body.id; }
+  /*else {
+     console.log(req.body.username);
+     follows = when(knex('users').where('username', req.body.username).first().then(user => {
+        if (!user) { throw new Error("Username does not exist") };
+        return user.id;
+     }).catch(error => { console.log(error); res.status(500).json("Username does not exist."); }));
+  }*/
+
+  console.log("FOLLOWS: "+follows);
   // make sure both of these users exist
   knex('users').where('id',id).first().then(user => {
     return knex('groups').where('group_id',follows).first();

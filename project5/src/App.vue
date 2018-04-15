@@ -1,8 +1,13 @@
 <template>
   <div id="app">
     <app-header/>
-    <show-my-channels/>
-    <router-view/>
+    <table style="width:100%">
+    <tr>
+    <td valign="top">
+       <show-my-channels/></td>
+    <td valign="top">    
+       <router-view/></td>
+    </tr></table>
   </div>
 </template>
 
