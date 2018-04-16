@@ -39,13 +39,15 @@
        return this.$store.getters.channelError;
      },
      noError: function() {
-       if (this.$store.getters.channelError !== "" || this.$store.getters.channel === [] || this.$store.getters.channel == "" ) { return false; }
+       if (this.$store.getters.channelError !== "") { return false; }
        return true;
      }
    },
    created: function() {
      this.$store.dispatch('getChannel', this.$route.params.gid);
      console.log("here11."+this.$store.getters.channel+".");
+     console.log(this.$store.getters.loggedIn);
+     console.log(this.$store.getters.channelError);
      //console.log(
    },
    methods: {

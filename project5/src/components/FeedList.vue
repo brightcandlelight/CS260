@@ -2,7 +2,7 @@
   <div>
     <div v-for="item in feed" class="item">
       <p class="idline"><span class="user">{{item.name}}</span><router-link :to="{ name: 'UserPage', params: {userID: item.userID}}"><span class="handle">@{{item.username}}</span></router-link><span class="time">{{item.created | since}}</span></p>
-      <p v-html="formatTweet(item.tweet)" class="tweet"></p>
+      <p v-html="item.tweet" class="tweet"> </p><p><button class="alternate time margin" type="submit" v-on:click="deleteTweet(item)" v-if="mine(item)">X</button></p> 
     </div>
   </div>
 </template>
@@ -36,13 +36,28 @@
        return moment(datetime).fromNow();
      },
    },
+   computed: {
+ //    mine: function() {
+   //    return item.userId === this.$store.getters.user.id;
+     //},
+   },
    methods: {
      formatTweet: function(text) {
        return linkify(text, {
          defaultProtocol: 'https'
        });
      },
-   },
+     deleteTweet: function(text) {
+       console.log("DT "+text.id);
+       this.$store.dispatch('deleteMsg',{
+          id: text.id,
+       });
+     },
+     mine: function(item) {
+       console.log("M "+item.userID +" "+this.$store.getters.user.id);
+       return item.userID === this.$store.getters.user.id;
+     },
+   }
  }
 
 </script>
@@ -69,5 +84,9 @@
  .time {
      float: right;
      color: #666;
+ }
+ .margin {
+     padding-top: 0px !important;
+     margin-top: -10px !important;
  }
 </style>

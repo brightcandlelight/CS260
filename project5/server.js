@@ -8,6 +8,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static('public'));
 
+// jwt setup
+const jwt = require('jsonwebtoken');
+let jwtSecret = process.env.jwtSecret;
+if (jwtSecret === undefined) {
+  console.log("You need to define a jwtSecret environment variable to continue.");
+  knex.destroy();
+  process.exit();
+}
+
 // Knex Setup //
 const env = process.env.NODE_ENV || 'development';
 const config = require('./knexfile')[env];  
@@ -16,6 +25,30 @@ const knex = require('knex')(config);
 // bcrypt setup
 let bcrypt = require('bcrypt');
 const saltRounds = 10;
+
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  console.log("TOKEN: "+token+ " "+req.headers);
+  if (!token)
+    return res.status(403).send({ error: 'No token provided.' });
+  jwt.verify(token, jwtSecret, function(err, decoded) {
+    if (err)
+      return res.status(500).send({ error: 'Failed to authenticate token.' });
+    // if everything good, save to request for use in other routes
+    req.userID = decoded.id;
+    next();
+  });
+}
+
+// Get my account
+app.get('/api/me', verifyToken, (req,res) => {
+  knex('users').where('id',req.userID).first().select('username','name','id').then(user => {
+    console.log(user+ " "+user.id);
+    res.status(200).json({user:user});
+  }).catch(error => {
+    res.status(500).json({ error });
+  });
+});
 
 // Login //
 
@@ -29,10 +62,18 @@ app.post('/api/login', (req, res) => {
     }
     return [bcrypt.compare(req.body.password, user.hash),user];
   }).spread((result,user) => {
-    if (result)
-      res.status(200).json({user:{username:user.username,name:user.name,id:user.id}});
-    else
-      res.status(403).send("Invalid credentials");
+    if (result) {
+       let token = jwt.sign({ id: user.id }, jwtSecret, {
+        expiresIn: 86400 // expires in 24 hours
+       });
+      res.status(200).json({user:{username:user.username,name:user.name,id:user.id},token:token});
+    } else {
+       res.status(403).send("Invalid credentials");
+    }
+    //if (result)
+    //  res.status(200).json({user:{username:user.username,name:user.name,id:user.id}});
+    //else
+    //  res.status(403).send("Invalid credentials");
     return;
   }).catch(error => {
     if (error.message !== 'abort') {
@@ -45,7 +86,7 @@ app.post('/api/login', (req, res) => {
 // Channels //
 
 // Get all the entries for one of your channels
-app.get('/api/channels/:gid/:id', (req, res) => {
+app.get('/api/channels/:gid/:id', verifyToken, (req, res) => {
   console.log("here7");
   let offset = 0;
   if (req.query.offset)
@@ -73,11 +114,47 @@ app.get('/api/channels/:gid/:id', (req, res) => {
   knex('users').join('tweets', 'users.id', 'tweets.user_id')
     .where('group_id',gid)
     .orderBy('created', 'desc')
-    .select('tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
+    .select('tweets.id','tweet','username','name', 'created', 'user_id as userID', 'group_id').then(tweets => {
     res.status(200).json({tweets:tweets});
   }).catch(error => {
     console.log(error);
     res.status(500).json({ error });
+  });
+
+  }});
+});
+
+app.delete('/api/channels/:gid/:id/:msg_id', verifyToken, (req,res) => {
+  let gid = parseInt(req.params.gid);
+  let id = parseInt(req.params.id);
+  let msg_id = parseInt(req.params.msg_id);
+  console.log("gid "+gid+ " id "+id+ " msgid "+msg_id);  
+
+  let sent = 0;
+  knex('followers').where('user_id', id).where('follows_id', gid).first().then(user => {
+      console.log("HERE10"+user);
+      if (typeof user === 'undefined') {
+           res.status(500).json( "Not authorized" );
+           sent = 1;
+           return;
+      } else {
+
+  if (sent == 1) { return; }
+  console.log("here10");
+
+  knex('users').where('id',id).first().then(user => {
+    return knex('tweets').where('id', msg_id).first().del()
+        .catch(error => { res.status(500).json({error}); sent = 1; } );
+  }).then(tweet => {
+    if (sent != 1) {
+       res.status(200).json({tweet:tweet});
+       return;
+    }
+  }).catch(error => {
+    if (sent != 1) {
+      console.log(error);
+      res.status(500).json({ error });
+    }
   });
 
   }});
@@ -126,7 +203,7 @@ app.get('/api/channels/:gid/:id', (req, res) => {
 });*/
 
 // Make that channel direct
-app.put('/api/channels/:gid', (req, res) => {
+app.put('/api/channels/:gid', verifyToken, (req, res) => {
   let gid = parseInt(req.params.gid);
   console.log(gid);
   if (typeof gid === 'undefined') { return res.status(400).send(); }
@@ -143,7 +220,7 @@ app.put('/api/channels/:gid', (req, res) => {
 });
 
 // Create a channel
-app.post('/api/channels', (req, res) => {
+app.post('/api/channels', verifyToken, (req, res) => {
   console.log("CREATE: "+req.body.groupname+ " "+req.body.description);
   if (!req.body.groupname || typeof req.body.description === 'undefined'
         || typeof req.body.public === 'undefined' || typeof req.body.direct === 'undefined') {
@@ -152,7 +229,8 @@ app.post('/api/channels', (req, res) => {
   }
   knex('groups').where('name', req.body.groupname).first().then(user => {
     if (user !== undefined) {
-      res.status(403).send("Conversation already exists");
+      console.log("Reopen group "+user);
+      res.status(200).send({group:user.group_id});
       throw new Error('abort');
     }
   }).then(() => {
@@ -205,7 +283,12 @@ app.post('/api/users', (req, res) => {
   }).then(ids => {
     return knex('users').where('id',ids[0]).first().select('username','name','id');
   }).then(user => {
-    res.status(200).json({user:user});
+    //res.status(200).json({user:user});
+    let token = jwt.sign({ id: user.id }, jwtSecret, {
+      expiresIn: 86400 // expires in 24 hours
+    });
+    res.status(200).json({user:user,token:token});
+
     return;
   }).catch(error => {
     if (error.message !== 'abort') {
@@ -245,7 +328,7 @@ app.delete('/api/users/:id', (req, res) => {
 });*/
 
 // Get the direct message groups a user is subscribed to
-app.get('/api/channels/user/1/:id', (req, res) => {
+app.get('/api/channels/user/1/:id', verifyToken, (req, res) => {
   let id = parseInt(req.params.id);
   console.log("here6 "+req.params.id);
   knex('followers').join('groups','followers.follows_id','groups.group_id')
@@ -261,7 +344,7 @@ app.get('/api/channels/user/1/:id', (req, res) => {
 });
 
 // Post to a group channel
-app.post('/api/channels/:id/:gid', (req, res) => {
+app.post('/api/channels/:id/:gid', verifyToken, (req, res) => {
   let id = parseInt(req.params.id);
   let gid = parseInt(req.params.gid);
   let sent =0;
@@ -353,7 +436,7 @@ app.get('/api/tweets/hash/:hashtag', (req, res) => {
 
 // Followers //
 
-app.get('/api/users/name/:id', (req,res) => {
+app.get('/api/users/name/:id', verifyToken, (req,res) => {
   let id = req.params.id;
   console.log("GetUser:"+id);
   knex('users').where('username', id).first().then(user => {
@@ -363,7 +446,7 @@ app.get('/api/users/name/:id', (req,res) => {
 });
 
 // follow a group. Pass in object with id.
-app.post('/api/users/:id/follow', (req,res) => {
+app.post('/api/users/:id/follow', verifyToken, (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
   // id of the group who is being followed
@@ -409,7 +492,7 @@ app.post('/api/users/:id/follow', (req,res) => {
 });
 
 // unfollow a group
-app.delete('/api/users/:id/follow/:follower', (req,res) => {
+app.delete('/api/users/:id/follow/:follower', verifyToken, (req,res) => {
   // id of the person who is following
   let id = parseInt(req.params.id);
   // id of the person who is being followed
