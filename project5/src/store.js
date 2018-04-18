@@ -194,6 +194,9 @@ export default new Vuex.Store({
     clearChannel(context) {
       context.commit('setChannel',{'groupname':'', 'description':'', people:[], direct:'', public:''});
     },
+    clearChannelError(context) {
+      context.commit('setChannelError','');
+    },
     
     // Add to channel //
     addChannelMsg(context,tweet) {

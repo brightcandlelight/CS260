@@ -36,8 +36,9 @@
      },
    },
    created: function() {
+     this.$store.dispatch('clearChannelError');
      if (this.gid && this.gid !== -1) {
-        console.log("HERE "+this.gid);
+        //console.log("HERE "+this.gid);
         this.$store.dispatch('getChannel', this.gid);
      } else {
         this.$store.dispatch('clearChannel');

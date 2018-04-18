@@ -39,6 +39,7 @@
          password: this.password,
 	 name: this.name,
        });
+       this.$router.push({ path: '/create/-1' });
      }
    }
  }

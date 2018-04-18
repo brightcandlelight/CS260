@@ -60,7 +60,7 @@
          this.email = '';
          this.password = '';
        });
-       this.$router.push({ path: '/' });
+       this.$router.push({ path: '/create/-1' });
      },
      logout: function() {
        this.$store.dispatch('logout');
